@@ -275,9 +275,9 @@ public class MainActivity extends ListActivity {
 		// Add event to user's created events
 		createdEventsRef.child(phone_number).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
 		
-		// Add event to invitees' list
+		// Add event to invitees' lists
 		for(String attendee : new_event_attendees) {
-			userEventsRef.child(attendee).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
+			userEventsRef.child(attendee).child(newEventRef.getName()).setValue("0", event.getDate().getDateAsString());
 		}
 		
 		// Allocate event status entry
