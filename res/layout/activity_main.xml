@@ -13,16 +13,23 @@
     </ListView>
     
     <Button
+        android:id="@+id/select_friends_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/create_event_button"
+        android:text="Select Friends!" />
+    
+    <Button
         android:id="@+id/create_event_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Create an Event!" />
+        android:text="Create a New Event!" />
     
     <LinearLayout android:id="@+id/listFooter"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
-      android:layout_above="@+id/create_event_button"
+      android:layout_above="@+id/select_friends_button"
       android:orientation="horizontal">
 
     <EditText

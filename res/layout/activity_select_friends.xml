@@ -7,34 +7,31 @@
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/my_button"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/linearLayout1"
         android:layout_alignParentTop="true" >
     </ListView>
-    
-    
 
-    <LinearLayout
+    <LinearLayout android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
         android:weightSum="1.0" >
-        
-	    <Button
-	        android:id="@+id/return_button"
-	        android:layout_width="0dip"
-	        android:layout_height="wrap_content"
-	        android:layout_weight=".5"
-	        android:text="Return" />
-	    
-	    <Button
-	        android:id="@+id/add_button"
-	        android:layout_width="0dip"
-	        android:layout_height="wrap_content"
-	        android:layout_weight=".5"
-	        android:text="@string/add_friend_button" />
-        
+
+        <Button
+            android:id="@+id/return_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="Return" />
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="@string/add_friend_button" />
     </LinearLayout>
 
 </RelativeLayout>

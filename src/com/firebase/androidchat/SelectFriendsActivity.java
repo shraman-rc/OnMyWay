@@ -57,7 +57,7 @@ public class SelectFriendsActivity extends ListActivity{
 		final ListView listView = getListView();
 		adapter = new ArrayAdapter<String>(this,
 		        R.layout.rowlayout, R.id.name, new ArrayList<String>(friends.keySet()));
-		setListAdapter(adapter);  
+		setListAdapter(adapter);
 	}
 
 	// Android's stuff to pick a contact from the phone

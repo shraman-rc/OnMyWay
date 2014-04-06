@@ -79,10 +79,18 @@ public class MainActivity extends ListActivity {
 		new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-		         //Intent i = new Intent(MainActivity.this, CreateNewEventAttendeesActivity.class);    
-		         //startActivityForResult(i, 5);
+		         Intent i = new Intent(MainActivity.this, CreateNewEventAttendeesActivity.class);    
+		         startActivityForResult(i, 5);
+			}
+		});
+		
+		// Select friends button
+		findViewById(R.id.select_friends_button).setOnClickListener(
+		new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
 				Intent i = new Intent(MainActivity.this, SelectFriendsActivity.class);
-				startActivityForResult(i, 50);
+				startActivityForResult(i, 6);
 			}
 		});
 		
@@ -181,8 +189,6 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		GlobalClass global = (GlobalClass) getApplication();
-		System.out.println(global.friends);
 		// Display name
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
@@ -273,38 +279,11 @@ public class MainActivity extends ListActivity {
 				// listView.setSelection(chatListAdapter.getCount() - 1);
 			}
 		});
-
-		// Firebase code to indicate connection status
-		connectedListener = eventsRef.getRoot().child(".info/connected")
-				.addValueEventListener(new ValueEventListener() {
-					@Override
-					public void onDataChange(DataSnapshot dataSnapshot) {
-						boolean connected = (Boolean) dataSnapshot.getValue();
-						if (connected) {
-							Toast.makeText(MainActivity.this,
-									"Connected to Firebase", Toast.LENGTH_SHORT)
-									.show();
-						} else {
-							Toast.makeText(MainActivity.this,
-									"Disconnected from Firebase",
-									Toast.LENGTH_SHORT).show();
-						}
-					}
-
-					@Override
-					public void onCancelled() {
-						// No-op
-					}
-				});
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		eventsRef.getRoot().child(".info/connected")
-				.removeEventListener(connectedListener);
-		usersRef.getRoot().child(".info/connected")
-		.removeEventListener(connectedListener);
 		createdEventListAdapter.cleanup();
 	}
 
