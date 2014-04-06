@@ -1,12 +1,12 @@
 package com.firebase.androidchat;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,12 +18,16 @@ import com.firebase.client.ValueEventListener;
 public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
 	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	private Firebase eventsRef = new Firebase(FIREBASE_URL).child("events");
+	private Firebase friendsRef = new Firebase(FIREBASE_URL).child("friends");
 	private Firebase usersRef = new Firebase(FIREBASE_URL).child("users");
 	private Context context;
+	private Activity activity;
+	private GlobalClass global;
 
     public CreatedEventListAdapter(Query ref, Activity activity, int layout, Context context) {
         super(ref, String.class, layout, activity);
         this.context = context;
+        this.activity = activity;
     }
 
     @Override
@@ -50,28 +54,23 @@ public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
 			    	 // Populate the attendees list
 			    	 List attendees = event.getAttendees();
 			    	 attendeesList.removeAllViews();
+			    	 
+			    	 
+			    	 global = (GlobalClass) activity.getApplication();
 			    	 for (Object attendee : attendees) {
-			    		 // Figure out the attendee from the phone number
-			    		 usersRef.child(attendee.toString()).addValueEventListener(new ValueEventListener() {
-						     @Override
-						     public void onDataChange(DataSnapshot snapshot) {
-						    	 User user = snapshot.getValue(User.class);
-						         if (user != null) {
-						        	 View inflatedView = inflater.inflate(R.layout.rowlayout, null);
-				                     TextView attendeeNameText = (TextView) inflatedView.findViewById(R.id.name);
-				                     attendeeNameText.setText(user.getName());
-				                     attendeesList.addView(inflatedView);
-						         }
-						     }
-		
-						     @Override
-						     public void onCancelled() {
-						         System.err.println("Listener was cancelled");
-						     }
-						 });
+			    		// Figure out the attendee from the phone number
+			    		 String name = "";
+			    		 for (Entry<String, String> entry : global.friends.entrySet()) {
+			    		     if (attendee.equals(entry.getValue())) {
+			    		            name = entry.getKey();
+			    		            break;
+			    		     }
+			    		 }
 			    		 
-			    		  
-	                     
+			    		 View inflatedView = inflater.inflate(R.layout.rowlayout, null);
+	                     TextView attendeeNameText = (TextView) inflatedView.findViewById(R.id.name);
+	                     attendeeNameText.setText(name);
+	                     attendeesList.addView(inflatedView);
 	                 }
 			 		
 			    	 

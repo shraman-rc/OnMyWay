@@ -35,19 +35,11 @@ public class CreateNewEventAttendeesActivity extends Activity {
 		
         list = (ListView)findViewById(R.id.list);
         but = (Button)findViewById(R.id.but);
-        System.out.println(0);
         global = (GlobalClass) getApplication();
-        if(global.friends != null && global.friends.size() != 0) {
-        	names = global.friends.keySet().toArray(new String[global.friends.size()]);
-            Arrays.sort(names);
-        } else {
-        	names = new String[0];
-        }
-        System.out.println(1);
+        names = global.friends.keySet().toArray(new String[global.friends.size()]);
+        Arrays.sort(names);
         adapter = new ItemsAdapter(this, names);
-        System.out.println(2);
         list.setAdapter(adapter);
-        System.out.println(3);
         list.setOnItemClickListener(new OnItemClickListener() {
 
 		   @Override
@@ -74,11 +66,6 @@ public class CreateNewEventAttendeesActivity extends Activity {
 		      String name = names[i];
 		      if (global.friends.containsKey(name)) {
 		    	  String number = global.friends.get(name);
-		    	  
-		    	  // Format the number properly
-		    	  number = number.replaceAll("\\D+","");
-		    	  number = (number.length() < 11) ? "1" + number : number;
-		    	  
 		    	  attendees.add(number);
 		      }
 		     }

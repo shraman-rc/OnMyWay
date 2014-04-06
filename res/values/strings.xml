@@ -2,18 +2,13 @@
 <resources>
 
     <string name="app_name">OnMyWay</string>
-    <string name="title_activity_create_new_event">CreateNewEventActivity</string>
-    <string name="title_activity_create_new_event_name">CreateNewEventNameActivity</string>
-    <string name="title_activity_create_new_event_date">CreateNewEventDateActivity</string>
-    <string name="title_activity_create_new_event_time">CreateNewEventTimeActivity</string>
-    <string name="title_activity_create_new_event_attendees">CreateNewEventAttendeesActivity</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="when">When is the event?</string>
+    <string name="title_activity_created_events">My Created Events</string>
+    <string name="title_activity_create_new_event_name">Event Name</string>
+    <string name="title_activity_create_new_event_date">Event Date</string>
+    <string name="title_activity_create_new_event_time">Event Time</string>
+    <string name="title_activity_create_new_event_attendees">Event Attendees</string>
     <string name="next">Next</string>
-    <string name="title_activity_send_invites">SendInvitesActivity</string>
-    <string name="title_activity_select_friends">SelectFriendsActivity</string>
-    <string name="title_activity_select_personal_list">SelectPersonalListActivity</string>
+    <string name="title_activity_select_friends">Friends List</string>
     <string name="add_friend_button">Add a friend!</string>
 
 </resources>

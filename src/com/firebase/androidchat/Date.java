@@ -22,15 +22,15 @@ public class Date {
     private Date() { }
 
     Date(int year, int month, int day, int hour, int minute) {
-        this.year = year;
+        this.year = year - 1900;
         this.month = month;
         this.day = day;
         this.hour = hour;
         this.minute = minute;
         
         // Format 5/12 as May 12
-        java.util.Date d = new java.util.Date(year, month, day, hour, minute);
-        DateFormat dateFormat = new SimpleDateFormat("MMMMMMMMM d");
+        java.util.Date d = new java.util.Date(this.year, month, day, hour, minute);
+        DateFormat dateFormat = new SimpleDateFormat("MMMMMMMMM d, yyyy");
         this.date = dateFormat.format(d);
         
         dateFormat = new SimpleDateFormat("h:mm a");

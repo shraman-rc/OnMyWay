@@ -89,6 +89,10 @@ public class SelectFriendsActivity extends ListActivity{
 	            column = cursor.getColumnIndex(Phone.NUMBER);
 	            String number = cursor.getString(column);
 	            
+	           // Format the number properly
+		        number = number.replaceAll("\\D+","");
+		    	number = (number.length() < 11) ? "1" + number : number;
+	            
                 friends.put(name, number);
                 String[] names = friends.keySet().toArray(new String[friends.size()]);
                 Arrays.sort(names);

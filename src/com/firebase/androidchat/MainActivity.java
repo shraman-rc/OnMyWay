@@ -34,10 +34,6 @@ public class MainActivity extends ListActivity {
 
 	private String phone_number;
 	private String display_name;
-	private String[] contacts = new String[] {
-	        "Action", "Adventure", "Animation", "Children", "Comedy", "Documentary", "Drama",
-	        "Foreign", "History", "Independent", "Romance", "Sci-Fi", "Television", "Thriller"
-	    };;
 	private Firebase eventsRef;
 	private Firebase usersRef;
 	private Firebase createdEventsRef;
@@ -73,8 +69,7 @@ public class MainActivity extends ListActivity {
 		
 		// Make sure user has phone number and display name
 		setupUser();
-		setTitle(((display_name == null) ? phone_number : display_name) + "'s Created Events");
-
+		
 		// Create new event button
 		findViewById(R.id.create_event_button).setOnClickListener(
 		new View.OnClickListener() {
@@ -94,30 +89,6 @@ public class MainActivity extends ListActivity {
 				startActivityForResult(i, 6);
 			}
 		});
-		
-        /*
-		EditText inputText = (EditText) findViewById(R.id.messageInput);
-		inputText
-				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-					@Override
-					public boolean onEditorAction(TextView textView,
-							int actionId, KeyEvent keyEvent) {
-						if (actionId == EditorInfo.IME_NULL
-								&& keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-							createEvent();
-						}
-						return true;
-					}
-				});
-
-		// This is also for the chat box
-		findViewById(R.id.sendButton).setOnClickListener(
-				new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						createEvent();
-					}
-				});*/
 	}
 	
 	private void setupUser() {
@@ -260,9 +231,6 @@ public class MainActivity extends ListActivity {
         // usersRef.child(phone_number).setValue(display_name);
         usersRef.child(phone_number).setValue(new User(display_name, phone_number));
         
-        // Update the app title bar
-        setTitle(((display_name == null) ? phone_number : display_name) + "'s Created Events");
-
         // Store display name in shared prefs
 		SharedPreferences prefs = getApplication().getSharedPreferences(
 				"OnMyWayPrefs", 0);
@@ -274,7 +242,7 @@ public class MainActivity extends ListActivity {
 		super.onStart();
 		final ListView listView = getListView();
 		createdEventListAdapter = new CreatedEventListAdapter(createdEventsRef.child(phone_number), this,
-				R.layout.event, this);
+				R.layout.created_event, this);
 		listView.setAdapter(createdEventListAdapter);
 		createdEventListAdapter.registerDataSetObserver(new DataSetObserver() {
 			@Override
@@ -310,27 +278,5 @@ public class MainActivity extends ListActivity {
 			userEventsRef.child(attendee).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
 		}
 		
-		/*EditText inputText = (EditText) findViewById(R.id.messageInput);
-		String input = inputText.getText().toString();
-		if (!input.equals("")) {
-			Calendar c = Calendar.getInstance(); 
-			int seconds = c.get(Calendar.SECOND);
-			
-			Date curr = new Date(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DATE), c.get(Calendar.HOUR), c.get(Calendar.MINUTE));
-			// Date curr = new Date(2015,1,2,3,4);
-			List list = new ArrayList();
-			list.add("15555215554");
-			list.add("14255039234");
-			Event event = new Event(input, phone_number, curr, list);
-			
-			// Add event to event list
-			Firebase newEventRef = eventsRef.push();
-			// Prioritize by date (getDateAsString) so that earlier events show up at the top
-			newEventRef.setValue(event, event.getDate().getDateAsString());
-			
-			// Add event to user's created events
-			createdEventsRef.child(phone_number).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
-			inputText.setText("");
-		}*/
 	}
 }
