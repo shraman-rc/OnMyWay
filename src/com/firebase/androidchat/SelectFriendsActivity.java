@@ -1,13 +1,17 @@
 package com.firebase.androidchat;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import com.firebase.client.Firebase;
 
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -17,30 +21,26 @@ import android.widget.ListView;
 public class SelectFriendsActivity extends ListActivity{
 
 	private static final int PICK_CONTACT_REQUEST = 1;
-	private ArrayList<String> friends = new ArrayList<String>();
+	private Map<String, String> friends = new TreeMap<>();
+	private ArrayAdapter<String> adapter;
 	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_select_friends);
-		final Button button = (Button) findViewById(R.id.my_button);
+		
+		final Button button = (Button) findViewById(R.id.add_button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform action on click
             	pickContact();
-            	System.out.println(friends);
             }
         });
-
-		//System.out.println(friends);
 		
 		final ListView listView = getListView();
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-		        R.layout.rowlayout, R.id.name, friends);
+		adapter = new ArrayAdapter<String>(this,
+		        R.layout.rowlayout, R.id.name, new ArrayList<String>(friends.keySet()));
 		setListAdapter(adapter);  
-		
-
 	}
 
 	// Android's stuff to pick a contact from the phone
@@ -57,34 +57,24 @@ public class SelectFriendsActivity extends ListActivity{
 	    if (requestCode == PICK_CONTACT_REQUEST) {
 	        // Make sure the request was successful
 	        if (resultCode == RESULT_OK) {
-	        	// Get the URI that points to the selected contact
 	            Uri contactUri = data.getData();
-	            // We only need the NUMBER column, because there will be only one row in the result
-	            String[] projection = {Phone.DISPLAY_NAME};
-
-	            // Perform the query on the contact to get the DISPLAY_NAME column
-	            // We don't need a selection or sort order (there's only one result for the given URI)
-	            // CAUTION: The query() method should be called from a separate thread to avoid blocking
-	            // your app's UI thread. (For simplicity of the sample, this code doesn't do that.)
-	            // Consider using CursorLoader to perform the query.
+	            String[] projection = {Phone.NUMBER, Phone.DISPLAY_NAME};
 	            Cursor cursor = getContentResolver()
 	                    .query(contactUri, projection, null, null, null);
 	            cursor.moveToFirst();
 
-	            // Retrieve the phone number's name from the NAME column
 	            int column = cursor.getColumnIndex(Phone.DISPLAY_NAME);
 	            String name = cursor.getString(column);
 	            
-	            // Retrieve the phone number's number from the NUMBER column
 	            column = cursor.getColumnIndex(Phone.NUMBER);
 	            String number = cursor.getString(column);
 	            
-	            // Do something with the phone number...
-	            friends.add(name);
-	            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-	    		        R.layout.rowlayout, R.id.name, friends);
-	    		setListAdapter(adapter); 
-	            
+	            // TreeMap automatically sorts contacts in alphabetical order
+                friends.put(name, number);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+	    		        R.layout.rowlayout, R.id.name, new ArrayList<String>(friends.keySet()));
+	    		setListAdapter(adapter);
+                // adapter.notifyDataSetChanged();
 	        }
 	    }
 	}
