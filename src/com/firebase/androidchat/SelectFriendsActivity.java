@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,11 +14,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.firebase.client.Firebase;
+
 public class SelectFriendsActivity extends ListActivity{
 
 	private static final int PICK_CONTACT_REQUEST = 1;
 	private Map<String, String> friends = new TreeMap<>();
 	private ArrayAdapter<String> adapter;
+	
+	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	
 	
 	@Override
@@ -34,16 +36,18 @@ public class SelectFriendsActivity extends ListActivity{
 			this.friends = global.friends;
 		}
     	
-		// Add friend button
+		// Return button
 		findViewById(R.id.return_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	GlobalClass global = (GlobalClass) getApplication();
             	global.friends = friends;
+            	Firebase friendsRef = new Firebase(FIREBASE_URL).child("friends");
+            	friendsRef.child(global.phone_number).setValue(friends);
 				finish();
             }
         });
         
-		// Return button
+		// Add friend button
 		findViewById(R.id.add_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	pickContact();
@@ -91,6 +95,4 @@ public class SelectFriendsActivity extends ListActivity{
 	        }
 	    }
 	}
-
-
 }

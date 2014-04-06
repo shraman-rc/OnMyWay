@@ -3,6 +3,8 @@ package com.firebase.androidchat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -10,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
 public class MainActivity extends ListActivity {
@@ -38,8 +42,10 @@ public class MainActivity extends ListActivity {
 	private Firebase usersRef;
 	private Firebase createdEventsRef;
 	private Firebase userEventsRef;
+	private Firebase friendsRef;
 	private ValueEventListener connectedListener;
 	private CreatedEventListAdapter createdEventListAdapter;
+	private GlobalClass global;
 	
 	// Used with new event creation
 	private String new_event_name;
@@ -54,12 +60,15 @@ public class MainActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		global = (GlobalClass) getApplication();
 
 		// Setup our Firebase ref
 		eventsRef = new Firebase(FIREBASE_URL).child("events");
 		usersRef = new Firebase(FIREBASE_URL).child("users");
 		createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
 		userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
+		friendsRef = new Firebase(FIREBASE_URL).child("friends");
 		
 		// Make sure user has phone number and display name
 		setupUser();
@@ -110,6 +119,7 @@ public class MainActivity extends ListActivity {
 		// prefs.edit().clear().commit();
 		// System.out.println("Current prefs: " + prefs.getAll());
 		phone_number = prefs.getString("phone_number", null);
+		global.phone_number = phone_number;
 		display_name = prefs.getString("display_name", null);
 		if (display_name != null) {
 			storeDisplayName(display_name);
@@ -120,6 +130,7 @@ public class MainActivity extends ListActivity {
 			TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 			phone_number = tMgr.getLine1Number();
 			prefs.edit().putString("phone_number", phone_number).commit();
+			global.phone_number = phone_number;
 		}
 		// If display name is not stored in shared prefs, try to get from database
 		if (display_name == null) {
@@ -147,6 +158,23 @@ public class MainActivity extends ListActivity {
 			 });
 		}
 		
+		// Retrieve friends list if exists
+		friendsRef.child(phone_number).addValueEventListener(new ValueEventListener() {
+		     @Override
+		     public void onDataChange(DataSnapshot snapshot) {
+		    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
+		    	 Map<String, String> value = snapshot.getValue(t);
+		         if (value != null) {
+			         GlobalClass global = (GlobalClass) getApplication();
+			         global.friends = value;
+		         }
+		     }
+
+		     @Override
+		     public void onCancelled() {
+		         System.err.println("Listener was cancelled");
+		     }
+		 });
 
 	}
 	

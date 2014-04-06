@@ -7,7 +7,6 @@ public class User {
 
     private String name;
     private String phoneNumber;
-    private List friends;
 
     // Required default constructor for Firebase object mapping
     @SuppressWarnings("unused")
@@ -16,7 +15,6 @@ public class User {
     User(String name, String phoneNumber) {
         this.name = name;
         this.phoneNumber = phoneNumber;
-        friends = new ArrayList();
     }
 
     public String getName() {
@@ -26,8 +24,5 @@ public class User {
     public String getPhoneNumber() {
         return phoneNumber;
     }
-    
-    public List getFriends() {
-    	return friends;
-    }
+
 }
