@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +38,9 @@ public class MainActivity extends ListActivity {
 	private ValueEventListener connectedListener;
 	private CreatedEventListAdapter createdEventListAdapter;
 	
+	// Used with new event creation
+	private String new_event_name;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,6 +56,16 @@ public class MainActivity extends ListActivity {
 		setupUser();
 		setTitle(((display_name == null) ? phone_number : display_name) + "'s Created Events");
 
+		// Create new event button
+		findViewById(R.id.create_event_button).setOnClickListener(
+		new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+		         Intent i = new Intent(MainActivity.this, CreateNewEventDateActivity.class);    
+		         startActivityForResult(i, 3);
+			}
+		});
+		
         // This is the chat box at the bottom of the screen
 		EditText inputText = (EditText) findViewById(R.id.messageInput);
 		inputText
@@ -135,10 +149,44 @@ public class MainActivity extends ListActivity {
 		        if(extras != null) {
 		            display_name = extras.getString("input");
 		            storeDisplayName(display_name);
-	
 		        }
 		    }
 	    }
+		
+		// Created event name
+		if (requestCode == 2) {
+			if (resultCode == RESULT_OK) {
+				Bundle extras = data.getExtras();
+		        if(extras != null) {
+		        	new_event_name = extras.getString("input");
+		            System.out.println(new_event_name);
+		            Intent i = new Intent(MainActivity.this, CreateNewEventDateActivity.class);    
+   		            startActivityForResult(i, 3);
+		        }
+		    }
+	    }
+		
+		// Created event date
+		if (requestCode == 3) {
+			if (resultCode == RESULT_OK) {
+		    	
+		    }
+	    }
+		
+		// Created event time
+		if (requestCode == 4) {
+			if (resultCode == RESULT_OK) {
+		    	
+		    }
+	    }
+		
+		// Created event attendees
+		if (requestCode == 5) {
+			if (resultCode == RESULT_OK) {
+		    	
+		    }
+	    }
+		
 	}
 	
 	// Stores display name in shared prefs and database
