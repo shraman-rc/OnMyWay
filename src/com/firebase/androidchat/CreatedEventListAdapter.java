@@ -115,7 +115,6 @@ public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
 						    		    }
 						    		}
 
-						    		System.out.println(finalStatuses);
 						    		ListView listView = (ListView) view.findViewById(R.id.attendees);
 						    		setListViewHeightBasedOnChildren(listView);
 						    		listView.setOnTouchListener(new OnTouchListener() {
