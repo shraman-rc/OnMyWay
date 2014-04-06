@@ -1,21 +1,19 @@
 package com.firebase.androidchat;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.firebase.client.Firebase;
-
+import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 
 public class SelectFriendsActivity extends ListActivity{
@@ -30,8 +28,23 @@ public class SelectFriendsActivity extends ListActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_select_friends);
 		
-		final Button button = (Button) findViewById(R.id.add_button);
-        button.setOnClickListener(new View.OnClickListener() {
+		// Retrieve friends list from global class
+		GlobalClass global = (GlobalClass) getApplication();
+		if(global.friends != null) {
+			this.friends = global.friends;
+		}
+    	
+		// Add friend button
+		findViewById(R.id.return_button).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	GlobalClass global = (GlobalClass) getApplication();
+            	global.friends = friends;
+				finish();
+            }
+        });
+        
+		// Return button
+		findViewById(R.id.add_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	pickContact();
             }

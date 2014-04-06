@@ -70,8 +70,10 @@ public class MainActivity extends ListActivity {
 		new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-		         Intent i = new Intent(MainActivity.this, CreateNewEventAttendeesActivity.class);    
-		         startActivityForResult(i, 5);
+		         //Intent i = new Intent(MainActivity.this, CreateNewEventAttendeesActivity.class);    
+		         //startActivityForResult(i, 5);
+				Intent i = new Intent(MainActivity.this, SelectFriendsActivity.class);
+				startActivityForResult(i, 50);
 			}
 		});
 		
@@ -106,7 +108,7 @@ public class MainActivity extends ListActivity {
 		SharedPreferences prefs = getApplication().getSharedPreferences(
 				"OnMyWayPrefs", 0);
 		// prefs.edit().clear().commit();
-		System.out.println("Current prefs: " + prefs.getAll());
+		// System.out.println("Current prefs: " + prefs.getAll());
 		phone_number = prefs.getString("phone_number", null);
 		display_name = prefs.getString("display_name", null);
 		if (display_name != null) {
@@ -151,7 +153,9 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-	    // Display name
+		GlobalClass global = (GlobalClass) getApplication();
+		System.out.println(global.friends);
+		// Display name
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
 		    	Bundle extras = data.getExtras();
