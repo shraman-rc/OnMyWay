@@ -35,13 +35,25 @@
             android:label="@string/title_activity_create_new_event" >
         </activity>
         <activity
-            android:name="com.firebase.androidchat.SendInvitesActivity"
-            android:label="@string/title_activity_send_invites" >
-        </activity>
-        <activity
             android:name="com.firebase.androidchat.SelectFriendsActivity"
             android:label="@string/title_activity_select_friends" >
 
+        </activity>
+        <activity
+            android:name="com.firebase.androidchat.CreateNewEventNameActivity"
+            android:label="@string/title_activity_create_new_event_name" >
+        </activity>
+        <activity
+            android:name="com.firebase.androidchat.CreateNewEventDateActivity"
+            android:label="@string/title_activity_create_new_event_date" >
+        </activity>
+        <activity
+            android:name="com.firebase.androidchat.CreateNewEventTimeActivity"
+            android:label="@string/title_activity_create_new_event_time" >
+        </activity>
+        <activity
+            android:name="com.firebase.androidchat.CreateNewEventAttendeesActivity"
+            android:label="@string/title_activity_create_new_event_attendees" >
         </activity>
     </application>
 

@@ -126,16 +126,18 @@ public class MainActivity extends ListActivity {
 	}
 	
 	@Override
-	// This method is called after the user inputs a display name in LoginActivity
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-	    if (resultCode == RESULT_OK) {
-	    	Bundle extras = data.getExtras();
-	        if(extras != null) {
-	            display_name = extras.getString("input");
-	            storeDisplayName(display_name);
-
-	        }
+	    // Display name
+		if (requestCode == 1) {
+			if (resultCode == RESULT_OK) {
+		    	Bundle extras = data.getExtras();
+		        if(extras != null) {
+		            display_name = extras.getString("input");
+		            storeDisplayName(display_name);
+	
+		        }
+		    }
 	    }
 	}
 	

@@ -3,6 +3,10 @@
 
     <string name="app_name">OnMyWay</string>
     <string name="title_activity_create_new_event">CreateNewEventActivity</string>
+    <string name="title_activity_create_new_event_name">CreateNewEventNameActivity</string>
+    <string name="title_activity_create_new_event_date">CreateNewEventDateActivity</string>
+    <string name="title_activity_create_new_event_time">CreateNewEventTimeActivity</string>
+    <string name="title_activity_create_new_event_attendees">CreateNewEventAttendeesActivity</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="when">When is the event?</string>
