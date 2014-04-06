@@ -1,5 +1,7 @@
 package com.firebase.androidchat;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -150,6 +153,19 @@ public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
 		     }
 		 });
     }
+    
+    /*
+    private class UpdateTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void...content) {
+          
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+          textView.setText(result);
+        }
+      }*/
     
     // This code sets the height of the ListView dynamically
     // http://stackoverflow.com/questions/18367522/android-list-view-inside-a-scroll-view

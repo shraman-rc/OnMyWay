@@ -19,12 +19,17 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.firebase.androidchat.MainActivity"
-            android:label="@string/title_activity_created_events" >
-            <intent-filter>
+            android:name="com.firebase.androidchat.TabHostActivity"
+            android:label="OnMyWay" >
+             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.firebase.androidchat.MainActivity"
+            android:label="@string/title_activity_created_events" >
+
         </activity>
         <activity
             android:name="com.firebase.androidchat.LoginActivity"
