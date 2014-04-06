@@ -1,35 +1,41 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical"
     tools:context=".CreateNewEventNameActivity" >
 
-	<TextView
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/event_name"
-        android:layout_marginBottom="53dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
         android:gravity="center_horizontal"
         android:text="What is the event called?" />
+
 	
-	<EditText
+    <LinearLayout 
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="50dp"
+      android:orientation="horizontal">
+
+    <EditText
         android:id="@+id/event_name"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/next_button"
-        android:layout_marginBottom="60dp"
+        android:layout_width="wrap_content"
         android:layout_weight="1"
-        android:ems="10"
-        android:inputType="textShortMessage"
         android:lines="1"
+        android:inputType="textShortMessage"
         android:singleLine="true" />
-	
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" 
-        android:text = "Next"/>
+        android:layout_gravity="center"
+        android:text="Next" />
 
-</RelativeLayout>
+</LinearLayout>

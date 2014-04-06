@@ -1,39 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    tools:context=".CreateNewEventActivity" >
-	<TextView
-        android:id="@+id/ask_when"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/event_time"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="53dp"
-        android:text="@string/when" />
-	
-	<EditText
-        android:id="@+id/event_time"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/create_button"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="46dp"
-        android:layout_weight="1"
-        android:ems="10"
-        android:inputType="textShortMessage"
-        android:lines="1"
-        android:singleLine="true" />
-	
-    <Button
-        android:id="@+id/create_button"
+    <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" 
-        android:text = "@string/next"/>
-
+        android:id="@+id/but"
+        android:text="Click to select"/>
     
+    <ListView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list" 
+        />
 
-</RelativeLayout>
+</LinearLayout>

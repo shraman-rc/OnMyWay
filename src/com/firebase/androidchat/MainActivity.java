@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +30,10 @@ public class MainActivity extends ListActivity {
 
 	private String phone_number;
 	private String display_name;
+	private String[] contacts = new String[] {
+	        "Action", "Adventure", "Animation", "Children", "Comedy", "Documentary", "Drama",
+	        "Foreign", "History", "Independent", "Romance", "Sci-Fi", "Television", "Thriller"
+	    };;
 	private Firebase eventsRef;
 	private Firebase usersRef;
 	private Firebase createdEventsRef;
@@ -40,6 +43,12 @@ public class MainActivity extends ListActivity {
 	
 	// Used with new event creation
 	private String new_event_name;
+	private int new_event_year;
+	private int new_event_month;
+	private int new_event_day;
+	private int new_event_hour;
+	private int new_event_minute;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +70,8 @@ public class MainActivity extends ListActivity {
 		new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-		         Intent i = new Intent(MainActivity.this, CreateNewEventDateActivity.class);    
-		         startActivityForResult(i, 3);
+		         Intent i = new Intent(MainActivity.this, CreateNewEventAttendeesActivity.class);    
+		         startActivityForResult(i, 5);
 			}
 		});
 		
@@ -159,7 +168,6 @@ public class MainActivity extends ListActivity {
 				Bundle extras = data.getExtras();
 		        if(extras != null) {
 		        	new_event_name = extras.getString("input");
-		            System.out.println(new_event_name);
 		            Intent i = new Intent(MainActivity.this, CreateNewEventDateActivity.class);    
    		            startActivityForResult(i, 3);
 		        }
@@ -169,14 +177,27 @@ public class MainActivity extends ListActivity {
 		// Created event date
 		if (requestCode == 3) {
 			if (resultCode == RESULT_OK) {
-		    	
+				Bundle extras = data.getExtras();
+		        if(extras != null) {
+		        	new_event_year = extras.getInt("year");
+		        	new_event_month = extras.getInt("month");
+		        	new_event_day = extras.getInt("day");
+		            Intent i = new Intent(MainActivity.this, CreateNewEventTimeActivity.class);    
+   		            startActivityForResult(i, 4);
+		        }
 		    }
 	    }
 		
 		// Created event time
 		if (requestCode == 4) {
 			if (resultCode == RESULT_OK) {
-		    	
+				Bundle extras = data.getExtras();
+		        if(extras != null) {
+		        	new_event_hour = extras.getInt("hour");
+		        	new_event_minute = extras.getInt("minute");
+		            Intent i = new Intent(MainActivity.this, CreateNewEventAttendeesActivity.class);    
+   		            startActivityForResult(i, 5);
+		        }
 		    }
 	    }
 		

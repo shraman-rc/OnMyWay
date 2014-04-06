@@ -1,39 +1,33 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:context=".CreateNewEventTimeActivity" >
 
-    tools:context=".CreateNewEventActivity" >
-	<TextView
-        android:id="@+id/ask_when"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/event_time"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="53dp"
-        android:text="@string/when" />
-	
-	<EditText
-        android:id="@+id/event_time"
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/create_button"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="46dp"
-        android:layout_weight="1"
-        android:ems="10"
-        android:inputType="textShortMessage"
-        android:lines="1"
-        android:singleLine="true" />
-	
-    <Button
-        android:id="@+id/create_button"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
+        android:gravity="center_horizontal"
+        android:text="What time will the event be?" />
+
+    <LinearLayout
+        android:id="@+id/timePickerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" 
-        android:text = "@string/next"/>
+        android:layout_marginBottom="50dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical" >
+    </LinearLayout>
 
-    
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Next" />
 
-</RelativeLayout>
+
+</LinearLayout>

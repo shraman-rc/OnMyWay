@@ -1,24 +1,24 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical"
     tools:context=".CreateNewEventDateActivity" >
 
     <TextView
-        android:id="@+id/textView1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/datePickerLayout"
-        android:layout_marginBottom="53dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="50dp"
         android:gravity="center_horizontal"
         android:text="What day will the event be?" />
-
 
     <LinearLayout
         android:id="@+id/datePickerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/next_button"
+        android:layout_marginBottom="50dp"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical" >
     </LinearLayout>
 
@@ -26,9 +26,8 @@
         android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_gravity="center"
         android:text="Next" />
 
 
-</RelativeLayout>
+</LinearLayout>
