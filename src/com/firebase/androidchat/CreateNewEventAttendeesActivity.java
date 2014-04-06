@@ -1,7 +1,12 @@
 package com.firebase.androidchat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +24,9 @@ import android.widget.ListView;
 public class CreateNewEventAttendeesActivity extends Activity {
 	ListView list;
 	Button but;
-	String[] GENRES = new String[] {
-		        "Action", "Adventure", "Animation", "Children", "Comedy", "Documentary", "Drama",
-		        "Foreign", "History", "Independent", "Romance", "Sci-Fi", "Television", "Thriller"
-		    };
 	ItemsAdapter adapter;
+	String[] names;
+	GlobalClass global;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +35,19 @@ public class CreateNewEventAttendeesActivity extends Activity {
 		
         list = (ListView)findViewById(R.id.list);
         but = (Button)findViewById(R.id.but);
-        
-//        list.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        adapter = new ItemsAdapter(this,GENRES);
+        System.out.println(0);
+        global = (GlobalClass) getApplication();
+        if(global.friends != null && global.friends.size() != 0) {
+        	names = global.friends.keySet().toArray(new String[global.friends.size()]);
+            Arrays.sort(names);
+        } else {
+        	names = new String[0];
+        }
+        System.out.println(1);
+        adapter = new ItemsAdapter(this, names);
+        System.out.println(2);
         list.setAdapter(adapter);
-        
+        System.out.println(3);
         list.setOnItemClickListener(new OnItemClickListener() {
 
 		   @Override
@@ -53,17 +64,31 @@ public class CreateNewEventAttendeesActivity extends Activity {
    
 		   @Override
 		   public void onClick(View v) {
-		    // TODO Auto-generated method stub
-		    Log.i("listview", ""+list.getChildCount());
-		    for(int i = 0;i<list.getChildCount();i++)
-		    {
+			   ArrayList<String> attendees = new ArrayList();
+		    for(int i = 0;i<list.getChildCount();i++) {
 		     View view = list.getChildAt(i);
 		     CheckedTextView cv =(CheckedTextView)view.findViewById(R.id.checkList);
 		     if(cv.isChecked())
 		     {
 		      Log.i("listview", cv.getText().toString());
-		      Log.i("listview", GENRES[i]);
+		      String name = names[i];
+		      if (global.friends.containsKey(name)) {
+		    	  String number = global.friends.get(name);
+		    	  
+		    	  // Format the number properly
+		    	  number = number.replaceAll("\\D+","");
+		    	  number = (number.length() < 11) ? "1" + number : number;
+		    	  
+		    	  attendees.add(number);
+		      }
 		     }
+		    }
+		    // Must have at least one attendee
+		    if(attendees.size() > 0) {
+			    Intent resultIntent = new Intent();
+				resultIntent.putStringArrayListExtra("attendees", attendees);
+				setResult(Activity.RESULT_OK, resultIntent);
+				finish();
 		    }
 		   }
 		  });

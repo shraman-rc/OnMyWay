@@ -8,7 +8,7 @@
         android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/listFooter"
+        android:layout_above="@+id/select_friends_button"
         android:layout_alignParentTop="true" >
     </ListView>
     
@@ -25,28 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:text="Create a New Event!" />
+
     
-    <LinearLayout android:id="@+id/listFooter"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:layout_above="@+id/select_friends_button"
-      android:orientation="horizontal">
-
-    <EditText
-        android:id="@+id/messageInput"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_weight="1"
-        android:lines="1"
-        android:inputType="textShortMessage"
-        android:singleLine="true" />
-
-    <ImageButton
-        android:id="@+id/sendButton"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:src="@android:drawable/ic_menu_send"
-        />
-    </LinearLayout>
 
 </RelativeLayout>

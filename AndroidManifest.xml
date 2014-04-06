@@ -32,16 +32,13 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.firebase.androidchat.CreateNewEventActivity"
-            android:label="@string/title_activity_create_new_event" >
-        </activity>
-        <activity
             android:name="com.firebase.androidchat.SelectFriendsActivity"
             android:label="@string/title_activity_select_friends" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreateNewEventNameActivity"
-            android:label="@string/title_activity_create_new_event_name" >
+            android:label="@string/title_activity_create_new_event_name"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreateNewEventDateActivity"

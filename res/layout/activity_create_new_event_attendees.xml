@@ -1,19 +1,39 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <Button 
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/but"
-        android:text="Click to select"/>
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="10dip"
+        android:paddingLeft="20dip"
+        android:paddingRight="20dip"
+        android:paddingTop="10dip"
+        android:text="Who is coming?"
+        android:textSize="20dip" />
     
     <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/textView1"
+        android:layout_above="@+id/but"
+         >
+    </ListView>
+
+
+
+    <Button
+        android:id="@+id/but"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/list" 
-        />
+        android:layout_alignParentBottom="true"
+        android:text="Send Invites!" />
 
-</LinearLayout>
+
+
+</RelativeLayout>

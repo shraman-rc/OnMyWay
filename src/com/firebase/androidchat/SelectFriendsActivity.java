@@ -1,8 +1,9 @@
 package com.firebase.androidchat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -19,7 +20,7 @@ import com.firebase.client.Firebase;
 public class SelectFriendsActivity extends ListActivity{
 
 	private static final int PICK_CONTACT_REQUEST = 1;
-	private Map<String, String> friends = new TreeMap<>();
+	private Map<String, String> friends = new HashMap<>();
 	private ArrayAdapter<String> adapter;
 	
 	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
@@ -55,8 +56,10 @@ public class SelectFriendsActivity extends ListActivity{
         });
 		
 		final ListView listView = getListView();
-		adapter = new ArrayAdapter<String>(this,
-		        R.layout.rowlayout, R.id.name, new ArrayList<String>(friends.keySet()));
+        String[] names = friends.keySet().toArray(new String[friends.size()]);
+        Arrays.sort(names);
+        adapter = new ArrayAdapter<String>(this,
+		        R.layout.rowlayout, R.id.name, names);
 		setListAdapter(adapter);
 	}
 
@@ -86,12 +89,14 @@ public class SelectFriendsActivity extends ListActivity{
 	            column = cursor.getColumnIndex(Phone.NUMBER);
 	            String number = cursor.getString(column);
 	            
-	            // TreeMap automatically sorts contacts in alphabetical order
                 friends.put(name, number);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-	    		        R.layout.rowlayout, R.id.name, new ArrayList<String>(friends.keySet()));
+                String[] names = friends.keySet().toArray(new String[friends.size()]);
+                Arrays.sort(names);
+                adapter = new ArrayAdapter<String>(this,
+	    		        R.layout.rowlayout, R.id.name, names);
 	    		setListAdapter(adapter);
                 // adapter.notifyDataSetChanged();
+	    		
 	        }
 	    }
 	}

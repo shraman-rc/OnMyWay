@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -54,6 +54,7 @@ public class MainActivity extends ListActivity {
 	private int new_event_day;
 	private int new_event_hour;
 	private int new_event_minute;
+	private List<String> new_event_attendees;
 	
 	
 	@Override
@@ -79,8 +80,8 @@ public class MainActivity extends ListActivity {
 		new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-		         Intent i = new Intent(MainActivity.this, CreateNewEventAttendeesActivity.class);    
-		         startActivityForResult(i, 5);
+		         Intent i = new Intent(MainActivity.this, CreateNewEventNameActivity.class);    
+		         startActivityForResult(i, 2);
 			}
 		});
 		
@@ -94,7 +95,7 @@ public class MainActivity extends ListActivity {
 			}
 		});
 		
-        // This is the chat box at the bottom of the screen
+        /*
 		EditText inputText = (EditText) findViewById(R.id.messageInput);
 		inputText
 				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -116,8 +117,7 @@ public class MainActivity extends ListActivity {
 					public void onClick(View view) {
 						createEvent();
 					}
-				});
-
+				});*/
 	}
 	
 	private void setupUser() {
@@ -242,7 +242,11 @@ public class MainActivity extends ListActivity {
 		// Created event attendees
 		if (requestCode == 5) {
 			if (resultCode == RESULT_OK) {
-		    	
+				Bundle extras = data.getExtras();
+		        if(extras != null) {
+		        	new_event_attendees = extras.getStringArrayList("attendees");
+		        	createEvent();
+		        }
 		    }
 	    }
 		
@@ -289,7 +293,24 @@ public class MainActivity extends ListActivity {
 
 	
 	private void createEvent() {
-		EditText inputText = (EditText) findViewById(R.id.messageInput);
+		Date date = new Date(new_event_year, new_event_month, new_event_day, new_event_hour, new_event_minute);
+		Event event = new Event(new_event_name, phone_number, date, new_event_attendees);
+		
+		// Add event to event list
+		Firebase newEventRef = eventsRef.push();
+		
+		// Prioritize by date (getDateAsString) so that earlier events show up at the top
+		newEventRef.setValue(event, event.getDate().getDateAsString());
+		
+		// Add event to user's created events
+		createdEventsRef.child(phone_number).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
+		
+		// Add event to invitees' list
+		for(String attendee : new_event_attendees) {
+			userEventsRef.child(attendee).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
+		}
+		
+		/*EditText inputText = (EditText) findViewById(R.id.messageInput);
 		String input = inputText.getText().toString();
 		if (!input.equals("")) {
 			Calendar c = Calendar.getInstance(); 
@@ -310,6 +331,6 @@ public class MainActivity extends ListActivity {
 			// Add event to user's created events
 			createdEventsRef.child(phone_number).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
 			inputText.setText("");
-		}
+		}*/
 	}
 }
