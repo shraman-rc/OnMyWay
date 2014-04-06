@@ -20,9 +20,11 @@ public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
 	private Firebase eventsRef = new Firebase(FIREBASE_URL).child("events");
 	private Firebase friendsRef = new Firebase(FIREBASE_URL).child("friends");
 	private Firebase usersRef = new Firebase(FIREBASE_URL).child("users");
+	private Firebase eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
 	private Context context;
 	private Activity activity;
 	private GlobalClass global;
+	private String eventId;
 
     public CreatedEventListAdapter(Query ref, Activity activity, int layout, Context context) {
         super(ref, String.class, layout, activity);
@@ -31,14 +33,12 @@ public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
     }
 
     @Override
-    protected void populateView(View view, String eventId) {
-        // Map a Chat object to an entry in our listview
+    protected void populateView(View view, final String eventId) {
         final TextView nameText = (TextView)view.findViewById(R.id.name);
         final TextView dateText = (TextView)view.findViewById(R.id.date);
         final TextView timeText = (TextView)view.findViewById(R.id.time);
         final LinearLayout attendeesList = (LinearLayout) view.findViewById(R.id.attendees);
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-   	 
    	 
         
         // From the event id, find the event from the events table
@@ -67,10 +67,28 @@ public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
 			    		     }
 			    		 }
 			    		 
-			    		 View inflatedView = inflater.inflate(R.layout.rowlayout, null);
+			    		 final View inflatedView = inflater.inflate(R.layout.rowlayout, null);
 	                     TextView attendeeNameText = (TextView) inflatedView.findViewById(R.id.name);
+	                     final TextView attendeeStatusText = (TextView) inflatedView.findViewById(R.id.status);
 	                     attendeeNameText.setText(name);
-	                     attendeesList.addView(inflatedView);
+	                     
+	                     // Determine the status of attendee
+	                     eventStatusRef.child(eventId).child(attendee.toString()).addValueEventListener(new ValueEventListener() {
+						     @Override
+						     public void onDataChange(DataSnapshot snapshot) {
+						    	 String status = snapshot.getValue(String.class);
+
+						         if (status != null) {
+						        	 attendeeStatusText.setText(status);
+						         }
+						         attendeesList.addView(inflatedView);
+						     }
+		
+						     @Override
+						     public void onCancelled() {
+						         System.err.println("Listener was cancelled");
+						     }
+						 });
 	                 }
 			 		
 			    	 

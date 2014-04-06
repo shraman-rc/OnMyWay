@@ -39,6 +39,7 @@ public class MainActivity extends ListActivity {
 	private Firebase createdEventsRef;
 	private Firebase userEventsRef;
 	private Firebase friendsRef;
+	private Firebase eventStatusRef;
 	private ValueEventListener connectedListener;
 	private CreatedEventListAdapter createdEventListAdapter;
 	private GlobalClass global;
@@ -66,6 +67,7 @@ public class MainActivity extends ListActivity {
 		createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
 		userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
 		friendsRef = new Firebase(FIREBASE_URL).child("friends");
+		eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
 		
 		// Make sure user has phone number and display name
 		setupUser();
@@ -277,6 +279,12 @@ public class MainActivity extends ListActivity {
 		for(String attendee : new_event_attendees) {
 			userEventsRef.child(attendee).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
 		}
+		
+		// Allocate event status entry
+		for(String attendee : new_event_attendees) {
+			eventStatusRef.child(newEventRef.getName()).child(attendee).setValue("?");
+		}
+		
 		
 	}
 }
