@@ -32,6 +32,10 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
+            android:name="com.firebase.androidchat.EventsActivity"
+            android:label="@string/title_activity_events" >
+        </activity>
+        <activity
             android:name="com.firebase.androidchat.SelectFriendsActivity"
             android:label="@string/title_activity_select_friends" >
         </activity>
