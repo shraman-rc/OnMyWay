@@ -259,7 +259,7 @@ public class MainActivity extends ListActivity {
 
 			   final Dialog dialog = new Dialog(MainActivity.this);
 			   dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				dialog.setContentView(R.layout.created_event);
+				dialog.setContentView(R.layout.created_event_details);
 				
 		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
 		        final TextView dateText = (TextView)dialog.findViewById(R.id.date);
@@ -323,16 +323,6 @@ public class MainActivity extends ListActivity {
 											    		}
 
 											    		ListView listView = (ListView) dialog.findViewById(R.id.attendees);
-											    		// setListViewHeightBasedOnChildren(listView);
-											    		listView.setOnTouchListener(new OnTouchListener() {
-											    		    // Setting on Touch Listener for handling the touch inside ScrollView
-											    		    @Override
-											    		    public boolean onTouch(View v, MotionEvent event) {
-											    		    // Disallow the touch request for parent scroll on touch of child view
-											    		    v.getParent().requestDisallowInterceptTouchEvent(true);
-											    		    return false;
-											    		    }
-											    		});
 											            SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
 											            		  finalStatuses, 
 											            	      R.layout.rowlayout, 
@@ -412,7 +402,7 @@ public class MainActivity extends ListActivity {
 	
 	// This code sets the height of the ListView dynamically
     // http://stackoverflow.com/questions/18367522/android-list-view-inside-a-scroll-view
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
+    /*public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null)
             return;
@@ -432,5 +422,5 @@ public class MainActivity extends ListActivity {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
-    }
+    }*/
 }

@@ -1,23 +1,26 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     tools:context=".CreateNewEventNameActivity" >
 
-    <TextView
+    <TextView android:id="@+id/textView1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="50dp"
         android:gravity="center_horizontal"
+        android:textSize="20dip"
         android:text="What is the event called?" />
 
 	
     <LinearLayout 
       android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="fill_parent"
       android:layout_marginBottom="50dp"
+      android:layout_gravity="center"
+      android:gravity="center"
       android:orientation="horizontal">
 
     <EditText
@@ -33,9 +36,9 @@
 
     <Button
         android:id="@+id/next_button"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
         android:text="Next" />
 
-</LinearLayout>
+</RelativeLayout>
