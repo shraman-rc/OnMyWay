@@ -14,20 +14,18 @@ import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.MeasureSpec;
-import android.view.View.OnTouchListener;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.GenericTypeIndicator;
@@ -254,15 +252,42 @@ public class MainActivity extends ListActivity {
 		listView.setAdapter(createdEventListAdapter);
 		
 		// Delete event
-		/*listView.setOnItemClickListener(new OnItemClickListener() {
-			   @Override
-			   public void OnItemLongClickListener(AdapterView<?> arg0, View arg1, int arg2,
-			     long arg3) {
-				   
-			   }
-		});		*/
+		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                    int pos, long arg3) {
+ 				final String eventId = getItem(pos).toString();
+ 				
+ 				TextView nameText = (TextView) arg1.findViewById(R.id.name);
+ 				final String name = nameText.getText().toString();
+            	
+            	final Dialog dialog = new Dialog(MainActivity.this);
+ 			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+ 				dialog.setContentView(R.layout.dialog);
+ 				TextView text = (TextView) dialog.findViewById(R.id.message);
+ 				text.setText("Remove " + name + "?");
+ 				Button buttonOkay = (Button) dialog.findViewById(R.id.okay_button);
+ 				buttonOkay.setOnClickListener(new OnClickListener() {
+ 					@Override
+ 					public void onClick(View v) {
+ 						removeEvent(eventId);
+ 						dialog.dismiss();
+ 					}
+ 				}); 				
+ 				Button buttonCancel = (Button) dialog.findViewById(R.id.cancel_button);
+ 				buttonCancel.setOnClickListener(new OnClickListener() {
+ 					@Override
+ 					public void onClick(View v) {
+ 						dialog.dismiss();
+ 					}
+ 				});
+ 				dialog.show();
+ 				return true;
+            }
+        });
+
 		
-		// Open popup
+		// Open popup for event details
 		listView.setOnItemClickListener(new OnItemClickListener() {
 		   @Override
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -270,7 +295,8 @@ public class MainActivity extends ListActivity {
 
 			    final Dialog dialog = new Dialog(MainActivity.this);
 			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				dialog.setContentView(R.layout.created_event_details);
+			    dialog.setContentView(R.layout.created_event_details);
+			    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 				
 		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
 		        final TextView dateText = (TextView)dialog.findViewById(R.id.date);
@@ -409,6 +435,59 @@ public class MainActivity extends ListActivity {
 		for(String attendee : new_event_attendees) {
 			eventStatusRef.child(newEventRef.getName()).child(attendee).setValue("?");
 		}
+	}
+	
+	private void removeEvent(final String eventId) {
+		// Remove from event list and return removed event
+		eventsRef.addChildEventListener(new ChildEventListener() {
+		    @Override
+		    public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
+
+		    }
+
+		    @Override
+		    public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
+
+		    }
+
+		    @Override
+		    public void onChildRemoved(DataSnapshot snapshot) {
+		    	Event event = snapshot.getValue(Event.class);
+		    	removeEventDependencies(eventId, event);
+		    	System.out.println(eventId);
+		    	System.out.println("event");
+		    	System.out.println(event);
+		    	System.out.println(event.getName());
+		    }
+
+		    @Override
+		    public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
+
+		    }
+
+		    @Override
+		    public void onCancelled() {
+
+		    }
+		});	
+		eventsRef.child(eventId).removeValue();
+	}
+	
+	public void removeEventDependencies(String eventId, Event event) {
+		// Remove from this user's created events
+		createdEventsRef.child(phone_number).removeValue();
+		
+		// Remove from invitees' lists
+		for(String attendee : new_event_attendees) {
+			userEventsRef.child(attendee).child(eventId).removeValue();
+		}
+		
+		// Remove entry from event status
+		eventStatusRef.child(eventId).removeValue();
+	}
+	
+	private Object getItem(int position) {
+		return createdEventListAdapter.getItem(position);
 	}
 	
 	// This code sets the height of the ListView dynamically
