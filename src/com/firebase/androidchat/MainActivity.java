@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
@@ -192,6 +194,8 @@ public class MainActivity extends ListActivity {
 			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			    dialog.setContentView(R.layout.created_event_details);
 			    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			    
+			    
 				
 		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
 		        final TextView dateText = (TextView)dialog.findViewById(R.id.date);
@@ -199,7 +203,7 @@ public class MainActivity extends ListActivity {
 		        
 		        // From the event id, find the event from the events table
 		        final String eventId = createdEventListAdapter.getItem(arg2).toString();
-		        eventsRef.child(eventId).addValueEventListener(new ValueEventListener() {
+		        eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
 				     @Override
 				     public void onDataChange(DataSnapshot snapshot) {
 				    	 Event event = snapshot.getValue(Event.class);
@@ -207,7 +211,10 @@ public class MainActivity extends ListActivity {
 					    	 nameText.setText(event.getName());
 					    	 dateText.setText(event.getDate().getDate());
 					    	 timeText.setText(event.getDate().getTime());
-					    	 eventStatusRef.child(eventId).addValueEventListener(new ValueEventListener() {
+					    	 
+					    	 // Listen to event status and remove listener when the dialog is closed
+
+					    	 final ValueEventListener statusListener = eventStatusRef.child(eventId).addValueEventListener(new ValueEventListener() {
 							     @Override
 							     public void onDataChange(DataSnapshot snapshot) {
 							    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
@@ -235,7 +242,7 @@ public class MainActivity extends ListActivity {
 							        	 final List<Map<String, String>> finalStatuses = statuses;
 							        	 
 							        	 // Get the event
-								    	 eventsRef.child(eventId).addValueEventListener(new ValueEventListener() {
+								    	 eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
 										     @Override
 										     public void onDataChange(DataSnapshot snapshot) {
 										    	 Event event = snapshot.getValue(Event.class);
@@ -271,6 +278,8 @@ public class MainActivity extends ListActivity {
 										     }
 										});
 							         }
+							         
+							      
 							     }
 
 							     @Override
@@ -278,6 +287,13 @@ public class MainActivity extends ListActivity {
 							         System.err.println("Listener was cancelled");
 							     }
 							 });
+					    	 
+							 dialog.setOnDismissListener(new OnDismissListener() {
+							    @Override
+							    public void onDismiss(DialogInterface dialogInterface) {
+							    	eventStatusRef.removeEventListener(statusListener);
+							    }
+						     });
 					    	 
 					    	 dialog.show();
 				    	 }
@@ -365,16 +381,18 @@ public class MainActivity extends ListActivity {
 	}
 	
 	public void removeEventDependencies(String eventId, Event event) {
-		// Remove from this user's created events
-		createdEventsRef.child(phone_number).removeValue();
-		
-		// Remove from invitees' lists
-		for(String attendee : new_event_attendees) {
-			userEventsRef.child(attendee).child(eventId).removeValue();
+		if (event != null) {
+			// Remove event from this user's created events
+			createdEventsRef.child(phone_number).child(eventId).removeValue();
+			
+			// Remove from invitees' lists
+			for(Object attendee : event.getAttendees()) {
+				userEventsRef.child(attendee.toString()).child(eventId).removeValue();
+			}
+			
+			// Remove entry from event status
+			eventStatusRef.child(eventId).removeValue();
 		}
-		
-		// Remove entry from event status
-		eventStatusRef.child(eventId).removeValue();
 	}
 	
 	private Object getItem(int position) {

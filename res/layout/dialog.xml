@@ -21,7 +21,14 @@
         android:layout_below="@+id/message"
         android:orientation="horizontal"
         android:weightSum="1.0" >
-
+        
+        <Button
+            android:id="@+id/okay_button"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:text="Okay" />
+        
         <Button
             android:id="@+id/cancel_button"
             android:layout_width="0dip"
@@ -29,12 +36,6 @@
             android:layout_weight=".5"
             android:text="Cancel" />
 
-        <Button
-            android:id="@+id/okay_button"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:text="Yes" />
     </LinearLayout>
 
 

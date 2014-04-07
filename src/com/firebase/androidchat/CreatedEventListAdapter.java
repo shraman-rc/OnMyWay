@@ -53,7 +53,7 @@ public class CreatedEventListAdapter extends FirebaseListAdapter<String> {
         final TextView timeText = (TextView)view.findViewById(R.id.time);
         
         // From the event id, find the event from the events table
-        eventsRef.child(eventId).addValueEventListener(new ValueEventListener() {
+        eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
 		     @Override
 		     public void onDataChange(DataSnapshot snapshot) {
 		    	 Event event = snapshot.getValue(Event.class);

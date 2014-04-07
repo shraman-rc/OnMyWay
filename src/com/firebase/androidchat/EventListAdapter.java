@@ -48,7 +48,7 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
     	final TextView eventText = (TextView)view.findViewById(R.id.name);
     	System.out.println("yolo");
     	// From the phone number, find the event from the events table
-        userEventsRef.child(phone_number).addValueEventListener(new ValueEventListener() {
+        userEventsRef.child(phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
 		//List<String> totalEvents =  new ArrayList();
         
         	@Override

@@ -21,45 +21,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
-public class EventsActivity extends ListActivity {
+public class EventsActivity extends MainActivity {
 
-	// TODO: change this to your own Firebase URL
-	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
-	
-	private GlobalClass global;
-	private Firebase userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
-	private Firebase ownEvents;
-	
-	private String phone_number;
-	private String display_name;
-	
-	private EventListAdapter adapter;
-	
-	protected Map<String, String> events = new HashMap<String, String>();
-	protected void onCreate(Bundle savedInstanceState) {
-		
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_events);
-		//get preferences
-		SharedPreferences prefs = getApplication().getSharedPreferences(
-				"OnMyWayPrefs", 0);
-		TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		phone_number = tMgr.getLine1Number();
-		prefs.edit().putString("phone_number", phone_number).commit();
-		System.out.println("prefs are " + prefs.getAll());
-		phone_number = prefs.getString("phone_number", null);
-		System.out.println("This is fucking up my shit" + phone_number);
-		display_name = prefs.getString("display_name", null);
-	}
-	
-	protected void onStart() {
-		super.onStart();
-		final ListView listView = getListView();
-		System.out.println("fuck");
-		System.out.println("this is" + phone_number);
-		System.out.println(userEventsRef.child(phone_number));
-		EventListAdapter eventListAdapter = new EventListAdapter(userEventsRef.child(phone_number), this,
-				R.layout.created_event, this);
-		listView.setAdapter(eventListAdapter);
-	}
 }

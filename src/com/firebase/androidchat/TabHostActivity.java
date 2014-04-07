@@ -70,8 +70,6 @@ public class TabHostActivity extends TabActivity  {
         tabHost.addTab(eventsSpec);
         tabHost.addTab(createdEventsSpec);
         tabHost.addTab(settingsSpec);
-
-		
 	}
 	
 	private void setupUser() {
@@ -98,7 +96,7 @@ public class TabHostActivity extends TabActivity  {
 		
 		// If display name is not stored in shared prefs, try to get from database
 		if (display_name == null) {
-			usersRef.child(phone_number).addValueEventListener(new ValueEventListener() {
+			usersRef.child(phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
 			     @Override
 			     public void onDataChange(DataSnapshot snapshot) {
 			         Object value = snapshot.getValue();
@@ -109,39 +107,7 @@ public class TabHostActivity extends TabActivity  {
 				        	 storeDisplayName(display_name);
 				         }
 			         } else {
-			        	// Prompt for display name 
-				        final Dialog dialog = new Dialog(TabHostActivity.this);
-					    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					    dialog.setCancelable(false);
-		 				dialog.setContentView(R.layout.display_name);
-		 				dialog.findViewById(R.id.sign_in_button).setOnClickListener(new OnClickListener() {
- 							@Override
- 							public void onClick(View view) {
- 								EditText inputText = (EditText) dialog.findViewById(R.id.display_name);
- 								String input = inputText.getText().toString();
- 								if (!input.equals("")) {
- 									display_name = input;
- 						            storeDisplayName(display_name);
- 						            dialog.dismiss();
- 								}
- 							}
- 						});
-		 				EditText displayNameText = (EditText)dialog.findViewById(R.id.display_name);
-		 				displayNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
- 				            @Override
- 				            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
- 				        		if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
- 	 								String input = textView.getText().toString();
- 	 								if (!input.equals("")) {
- 	 									display_name = input;
- 	 						            storeDisplayName(display_name);
- 	 						            dialog.dismiss();
- 	 								}
- 				                }
- 				                return true;
- 				            }
- 				        });
-		 				dialog.show();
+			             getNewDisplayName();
 			         }
 			     }
 
@@ -153,7 +119,7 @@ public class TabHostActivity extends TabActivity  {
 		}
 		
 		// Retrieve friends list if exists
-		friendsRef.child(phone_number).addValueEventListener(new ValueEventListener() {
+		friendsRef.child(phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
 		     @Override
 		     public void onDataChange(DataSnapshot snapshot) {
 		    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
@@ -185,5 +151,40 @@ public class TabHostActivity extends TabActivity  {
 		SharedPreferences prefs = getApplication().getSharedPreferences(
 				"OnMyWayPrefs", 0);
 	    prefs.edit().putString("display_name", display_name).commit();
+	}
+	
+	private void getNewDisplayName() {
+		// Prompt for display name 
+        final Dialog dialog = new Dialog(TabHostActivity.this);
+	    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	    dialog.setCancelable(false);
+		dialog.setContentView(R.layout.display_name);
+		dialog.findViewById(R.id.sign_in_button).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				EditText inputText = (EditText) dialog.findViewById(R.id.display_name);
+				String input = inputText.getText().toString();
+				if (!input.equals("")) {
+					display_name = input;
+		            storeDisplayName(display_name);
+		            dialog.dismiss();
+				}
+			}
+		});
+		EditText displayNameText = (EditText)dialog.findViewById(R.id.display_name);
+		displayNameText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+        		if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+					String input = textView.getText().toString();
+					if (!input.equals("")) {
+			            storeDisplayName(input);
+			            dialog.dismiss();
+					}
+                }
+                return true;
+            }
+        });
+		dialog.show();
 	}
 }
