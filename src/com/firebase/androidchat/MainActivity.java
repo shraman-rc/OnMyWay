@@ -454,10 +454,6 @@ public class MainActivity extends ListActivity {
 		    public void onChildRemoved(DataSnapshot snapshot) {
 		    	Event event = snapshot.getValue(Event.class);
 		    	removeEventDependencies(eventId, event);
-		    	System.out.println(eventId);
-		    	System.out.println("event");
-		    	System.out.println(event);
-		    	System.out.println(event.getName());
 		    }
 
 		    @Override
