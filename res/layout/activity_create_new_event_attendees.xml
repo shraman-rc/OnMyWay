@@ -14,7 +14,7 @@
         android:paddingRight="20dip"
         android:paddingTop="10dip"
         android:text="Who is coming?"
-        android:textSize="20dip" />
+        android:textSize="20sp" />
     
     <ListView
         android:id="@+id/list"

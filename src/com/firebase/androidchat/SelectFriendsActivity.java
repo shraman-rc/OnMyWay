@@ -1,10 +1,10 @@
 package com.firebase.androidchat;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,8 +12,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.firebase.client.Firebase;
 
@@ -56,18 +61,59 @@ public class SelectFriendsActivity extends ListActivity{
         });
 		
 		final ListView listView = getListView();
-        String[] names = friends.keySet().toArray(new String[friends.size()]);
-        Arrays.sort(names);
-        adapter = new ArrayAdapter<String>(this,
-		        R.layout.rowlayout, R.id.name, names);
-		setListAdapter(adapter);
+        refreshList();
+		
+		// Delete friend
+		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                    int pos, long arg3) {
+            	TextView nameText = (TextView) arg1.findViewById(R.id.name);
+ 				final String name = nameText.getText().toString();
+            	
+            	final Dialog dialog = new Dialog(SelectFriendsActivity.this);
+ 			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+ 				dialog.setContentView(R.layout.dialog);
+ 				TextView text = (TextView) dialog.findViewById(R.id.message);
+ 				text.setText("Remove " + name + "?");
+ 				Button buttonOkay = (Button) dialog.findViewById(R.id.okay_button);
+ 				buttonOkay.setOnClickListener(new OnClickListener() {
+ 					@Override
+ 					public void onClick(View v) {
+ 						removeFriend(name);
+ 						refreshList();
+ 						dialog.dismiss();
+ 					}
+ 				}); 				
+ 				Button buttonCancel = (Button) dialog.findViewById(R.id.cancel_button);
+ 				buttonCancel.setOnClickListener(new OnClickListener() {
+ 					@Override
+ 					public void onClick(View v) {
+ 						dialog.dismiss();
+ 					}
+ 				});
+ 				dialog.show();
+ 				return true;
+            }
+        });
 	}
 
-	// Android's stuff to pick a contact from the phone
 	private void pickContact() {
 	    Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
 	    pickContactIntent.setType(Phone.CONTENT_TYPE); // Show user only contacts w/ phone numbers
 	    startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST);
+	}
+	
+	private boolean removeFriend(String name) {
+		return friends.remove(name) != null;
+	}
+	
+	private void refreshList() {
+		String[] names = friends.keySet().toArray(new String[friends.size()]);
+        Arrays.sort(names);
+        adapter = new ArrayAdapter<String>(this,
+		        R.layout.rowlayout, R.id.name, names);
+		setListAdapter(adapter);
 	}
 	
 	//Getting the results from picking a singular contact
@@ -94,12 +140,7 @@ public class SelectFriendsActivity extends ListActivity{
 		    	number = (number.length() < 11) ? "1" + number : number;
 	            
                 friends.put(name, number);
-                String[] names = friends.keySet().toArray(new String[friends.size()]);
-                Arrays.sort(names);
-                adapter = new ArrayAdapter<String>(this,
-	    		        R.layout.rowlayout, R.id.name, names);
-	    		setListAdapter(adapter);
-                // adapter.notifyDataSetChanged();
+                refreshList();
 	    		
 	        }
 	    }

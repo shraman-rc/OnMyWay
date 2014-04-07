@@ -252,13 +252,24 @@ public class MainActivity extends ListActivity {
 		createdEventListAdapter = new CreatedEventListAdapter(createdEventsRef.child(phone_number), this,
 				R.layout.created_event, this);
 		listView.setAdapter(createdEventListAdapter);
+		
+		// Delete event
+		/*listView.setOnItemClickListener(new OnItemClickListener() {
+			   @Override
+			   public void OnItemLongClickListener(AdapterView<?> arg0, View arg1, int arg2,
+			     long arg3) {
+				   
+			   }
+		});		*/
+		
+		// Open popup
 		listView.setOnItemClickListener(new OnItemClickListener() {
 		   @Override
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 		     long arg3) {
 
-			   final Dialog dialog = new Dialog(MainActivity.this);
-			   dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			    final Dialog dialog = new Dialog(MainActivity.this);
+			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dialog.setContentView(R.layout.created_event_details);
 				
 		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
