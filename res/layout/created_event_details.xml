@@ -40,4 +40,17 @@
                 android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
+    
+<View
+    android:layout_width="fill_parent"
+    android:layout_height="1dp"
+    android:background="@android:color/darker_gray"/>
+
+        <ListView
+        android:id="@+id/attendees"
+        android:minHeight="150dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
 </LinearLayout>
