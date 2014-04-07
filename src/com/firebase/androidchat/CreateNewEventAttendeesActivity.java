@@ -2,13 +2,11 @@ package com.firebase.androidchat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,6 +25,7 @@ public class CreateNewEventAttendeesActivity extends Activity {
 	ItemsAdapter adapter;
 	String[] names;
 	GlobalClass global;
+	ArrayList<Boolean> checkedStates;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +36,10 @@ public class CreateNewEventAttendeesActivity extends Activity {
         but = (Button)findViewById(R.id.but);
         global = (GlobalClass) getApplication();
         names = global.friends.keySet().toArray(new String[global.friends.size()]);
+        checkedStates = new ArrayList<Boolean>();
+        for(String name : names) {
+        	checkedStates.add(false);
+        }
         Arrays.sort(names);
         adapter = new ItemsAdapter(this, names);
         list.setAdapter(adapter);
@@ -45,9 +48,11 @@ public class CreateNewEventAttendeesActivity extends Activity {
 		   @Override
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 		     long arg3) {
-		    // TODO Auto-generated method stub
-		    CheckedTextView tv = (CheckedTextView)arg1;
-		    toggle(tv);
+
+			   Boolean currentlyChecked = checkedStates.get(arg2);
+			   checkedStates.set(arg2, !currentlyChecked);
+	            CheckedTextView post = (CheckedTextView) arg1;
+	 		   post.setChecked(!currentlyChecked);
 		   }
 		         
 		  });
@@ -57,19 +62,17 @@ public class CreateNewEventAttendeesActivity extends Activity {
 		   @Override
 		   public void onClick(View v) {
 			   ArrayList<String> attendees = new ArrayList();
-		    for(int i = 0;i<list.getChildCount();i++) {
-		     View view = list.getChildAt(i);
-		     CheckedTextView cv =(CheckedTextView)view.findViewById(R.id.checkList);
-		     if(cv.isChecked())
-		     {
-		      Log.i("listview", cv.getText().toString());
-		      String name = names[i];
-		      if (global.friends.containsKey(name)) {
-		    	  String number = global.friends.get(name);
-		    	  attendees.add(number);
-		      }
-		     }
+		    for(int i = 0; i < names.length; i++) {
+		     
+		    if(checkedStates.get(i) == true) {
+		    	String name = names[i];
+			      if (global.friends.containsKey(name)) {
+			    	  String number = global.friends.get(name);
+			    	  attendees.add(number);
+			      }
 		    }
+		    }
+
 		    // Must have at least one attendee
 		    if(attendees.size() > 0) {
 			    Intent resultIntent = new Intent();
@@ -92,14 +95,16 @@ public class CreateNewEventAttendeesActivity extends Activity {
 		  // @Override
 		  public View getView(int position, View convertView, ViewGroup parent) {
 		   
-		   View v = convertView;
+			    
+			View v = convertView;
 		   if (v == null) {
 		    LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		    v = vi.inflate(R.layout.contact, null);
 		   } 
 		   CheckedTextView post = (CheckedTextView) v.findViewById(R.id.checkList);
 		   post.setText(items[position]);
-		   
+		   post.setChecked(checkedStates.get(position));
+
 		   return v;
 		  }
 

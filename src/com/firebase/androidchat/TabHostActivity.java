@@ -25,7 +25,7 @@ public class TabHostActivity extends TabActivity  {
         
         TabSpec createdEventsSpec = tabHost.newTabSpec("Created Events");
         Button createdEventsView = new Button(this);
-        createdEventsView.setText("Created Events");
+        createdEventsView.setText("My Events");
         createdEventsSpec.setIndicator(createdEventsView);
         createdEventsSpec.setContent(new Intent(this, MainActivity.class));
         
