@@ -32,11 +32,6 @@
 
         </activity>
         <activity
-            android:name="com.firebase.androidchat.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
-        </activity>
-        <activity
             android:name="com.firebase.androidchat.EventsActivity"
             android:label="@string/title_activity_events" >
 			

@@ -8,12 +8,9 @@ import java.util.Map.Entry;
 
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -32,17 +29,12 @@ import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
 public class MainActivity extends ListActivity {
-
-	// TODO: change this to your own Firebase URL
-	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
-
+    private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	private String phone_number;
 	private String display_name;
 	private Firebase eventsRef;
-	private Firebase usersRef;
 	private Firebase createdEventsRef;
 	private Firebase userEventsRef;
-	private Firebase friendsRef;
 	private Firebase eventStatusRef;
 	private ValueEventListener connectedListener;
 	private CreatedEventListAdapter createdEventListAdapter;
@@ -57,24 +49,19 @@ public class MainActivity extends ListActivity {
 	private int new_event_minute;
 	private List<String> new_event_attendees;
 	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
 		global = (GlobalClass) getApplication();
+		phone_number = global.phone_number;
+		display_name = global.display_name;
 
-		// Setup our Firebase ref
 		eventsRef = new Firebase(FIREBASE_URL).child("events");
-		usersRef = new Firebase(FIREBASE_URL).child("users");
 		createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
 		userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
-		friendsRef = new Firebase(FIREBASE_URL).child("friends");
 		eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
-		
-		// Make sure user has phone number and display name
-		setupUser();
 		
 		// Create new event button
 		findViewById(R.id.create_event_button).setOnClickListener(
@@ -97,86 +84,9 @@ public class MainActivity extends ListActivity {
 		});
 	}
 	
-	private void setupUser() {
-		// Get shared prefs from phone data
-		SharedPreferences prefs = getApplication().getSharedPreferences(
-				"OnMyWayPrefs", 0);
-		// prefs.edit().clear().commit();
-		// System.out.println("Current prefs: " + prefs.getAll());
-		phone_number = prefs.getString("phone_number", null);
-		global.phone_number = phone_number;
-		display_name = prefs.getString("display_name", null);
-		if (display_name != null) {
-			storeDisplayName(display_name);
-		}
-		
-
-		if (phone_number == null) {
-			TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-			phone_number = tMgr.getLine1Number();
-			prefs.edit().putString("phone_number", phone_number).commit();
-			global.phone_number = phone_number;
-		}
-		// If display name is not stored in shared prefs, try to get from database
-		if (display_name == null) {
-			usersRef.child(phone_number).addValueEventListener(new ValueEventListener() {
-			     @Override
-			     public void onDataChange(DataSnapshot snapshot) {
-			         Object value = snapshot.getValue();
-			         if (value != null) {
-			        	 User user = snapshot.getValue(User.class);
-				         if (user != null) {
-				        	 display_name = user.getName();
-				        	 storeDisplayName(display_name);
-				         }
-			         } else {
-			        	// If display name was not in database, call LoginActivity
-				         Intent i = new Intent(MainActivity.this, LoginActivity.class);    
-				         startActivityForResult(i, 1);
-			         }
-			     }
-
-			     @Override
-			     public void onCancelled() {
-			         System.err.println("Listener was cancelled");
-			     }
-			 });
-		}
-		
-		// Retrieve friends list if exists
-		friendsRef.child(phone_number).addValueEventListener(new ValueEventListener() {
-		     @Override
-		     public void onDataChange(DataSnapshot snapshot) {
-		    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
-		    	 Map<String, String> value = snapshot.getValue(t);
-		         if (value != null) {
-			         GlobalClass global = (GlobalClass) getApplication();
-			         global.friends = value;
-		         }
-		     }
-
-		     @Override
-		     public void onCancelled() {
-		         System.err.println("Listener was cancelled");
-		     }
-		 });
-
-	}
-	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		// Display name
-		if (requestCode == 1) {
-			if (resultCode == RESULT_OK) {
-		    	Bundle extras = data.getExtras();
-		        if(extras != null) {
-		            display_name = extras.getString("input");
-		            storeDisplayName(display_name);
-		        }
-		    }
-	    }
-		
 		// Created event name
 		if (requestCode == 2) {
 			if (resultCode == RESULT_OK) {
@@ -225,22 +135,7 @@ public class MainActivity extends ListActivity {
 		        	createEvent();
 		        }
 		    }
-	    }
-		
-	}
-	
-	// Stores display name in shared prefs and database
-	private void storeDisplayName(String display_name) {
-		this.display_name = display_name;
-		
-		// Store display name in database
-        // usersRef.child(phone_number).setValue(display_name);
-        usersRef.child(phone_number).setValue(new User(display_name, phone_number));
-        
-        // Store display name in shared prefs
-		SharedPreferences prefs = getApplication().getSharedPreferences(
-				"OnMyWayPrefs", 0);
-	    prefs.edit().putString("display_name", display_name).commit();
+	    }		
 	}
 
 	@Override
@@ -251,7 +146,7 @@ public class MainActivity extends ListActivity {
 				R.layout.created_event, this);
 		listView.setAdapter(createdEventListAdapter);
 		
-		// Delete event
+		// Delete event feature
 		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
@@ -287,7 +182,7 @@ public class MainActivity extends ListActivity {
         });
 
 		
-		// Open popup for event details
+		// Open popup for attendee status listener
 		listView.setOnItemClickListener(new OnItemClickListener() {
 		   @Override
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -396,7 +291,8 @@ public class MainActivity extends ListActivity {
 		    
 		   }
 		         
-		  });
+		});
+		
 		createdEventListAdapter.registerDataSetObserver(new DataSetObserver() {
 			@Override
 			public void onChanged() {
@@ -412,7 +308,6 @@ public class MainActivity extends ListActivity {
 		createdEventListAdapter.cleanup();
 	}
 
-	
 	private void createEvent() {
 		Date date = new Date(new_event_year, new_event_month, new_event_day, new_event_hour, new_event_minute);
 		Event event = new Event(new_event_name, phone_number, date, new_event_attendees);
