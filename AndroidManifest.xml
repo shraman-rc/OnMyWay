@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="16"
         android:targetSdkVersion="19" />
 
     <application
@@ -20,6 +20,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.firebase.androidchat.TabHostActivity"
+            android:screenOrientation="portrait"
             android:label="OnMyWay" >
              <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,41 +28,61 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.firebase.androidchat.MainActivity" >
+            android:name="com.firebase.androidchat.MainActivity"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreatedEventsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_created_events" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.EventsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_events" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.SettingsActivity"
+            android:screenOrientation="portrait"
             android:label="Settings" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.SelectFriendsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_select_friends" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreateNewEventNameActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_create_new_event_name"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreateNewEventDateActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_create_new_event_date" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreateNewEventTimeActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_create_new_event_time" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreateNewEventAttendeesActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_create_new_event_attendees" >
         </activity>
+        <service
+            android:name=".BackgroundService"
+            android:exported="false"
+            android:process=":remote" >
+        </service>
+        <receiver android:name=".ButtonClickReceiver" >
+            <intent-filter>
+                <action android:name="omw" />
+                <action android:name="no" />
+            </intent-filter>
+        </receiver>   
     </application>
 
 </manifest>

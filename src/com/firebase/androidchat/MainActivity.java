@@ -204,7 +204,7 @@ public class MainActivity extends ListActivity {
 		for(Object attendee : attendees) {
 			// Update ping table
 			
-			global.userPingsRef.child(attendee.toString()).child(eventId).setValue(seconds);
+			global.userPingsRef.child(attendee.toString()).child(eventId).setValue(System.currentTimeMillis());
 		}
 	}
 

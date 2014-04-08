@@ -69,6 +69,13 @@ public class TabHostActivity extends TabActivity  {
 		// Make sure user has phone number and display name
 		setupUser();
 		
+		// Start the background service
+		if (global.phone_number != null) {
+			Intent serviceIntent = new Intent(this, BackgroundService.class);
+			serviceIntent.putExtra("phone_number", global.phone_number);
+			startService(serviceIntent);
+		}
+
 		TabHost tabHost = getTabHost();
         
         TabSpec eventsSpec = tabHost.newTabSpec("Events");

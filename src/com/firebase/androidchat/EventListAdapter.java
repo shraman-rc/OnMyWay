@@ -1,9 +1,10 @@
 package com.firebase.androidchat;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.view.View;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -33,7 +34,12 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
         final TextView nameText = (TextView)view.findViewById(R.id.name);
         final TextView dateText = (TextView)view.findViewById(R.id.date);
         final TextView timeText = (TextView)view.findViewById(R.id.time);
-        // view.setBackgroundColor(0xFF00FF00);
+        
+        //Getting a well-formatted current time
+    	final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    	final Calendar cal = Calendar.getInstance();
+    	final String dummyTime = dateFormat.format(cal.getTime());
+    	final int currentTime = Integer.parseInt(dummyTime.substring(5,7) + dummyTime.substring(8,10) + dummyTime.substring(11,13) + dummyTime.substring(14,16));
         
         // From the event id, find the event from the events table
         eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -41,6 +47,14 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
 		     public void onDataChange(DataSnapshot snapshot) {
 		    	 if (snapshot != null) {
 		    		 Event event = snapshot.getValue(Event.class);
+		    		 
+		    		 //Set Background Colors
+		    		 int eventTime = Integer.parseInt(event.getDate().getDateAsString().substring(4));
+		    		 if ((eventTime - currentTime < 5) && (eventTime - currentTime >= 0)) {view.setBackgroundColor(0xAAFF8585);
+		    		 }else if ((eventTime - currentTime < 30) && (eventTime - currentTime >= 5)) {view.setBackgroundColor(0xAAFFAD33);
+		    		 }else if (eventTime - currentTime >=30) {view.setBackgroundColor(0xAAA7FFA7);
+		    		 }else {view.setBackgroundColor(0x00000000);}
+		    		 
 		    		 nameText.setText(event.getName());
 			    	 dateText.setText(event.getDate().getDate());
 			    	 timeText.setText(event.getDate().getTime());
