@@ -76,7 +76,7 @@ public class TabHostActivity extends TabActivity  {
 		// Get shared prefs from phone data
 		SharedPreferences prefs = getApplication().getSharedPreferences(
 				"OnMyWayPrefs", 0);
-		prefs.edit().clear().commit();
+		// prefs.edit().clear().commit();
 		// System.out.println("Current prefs: " + prefs.getAll());
 		phone_number = prefs.getString("phone_number", null);
 		global.phone_number = phone_number;

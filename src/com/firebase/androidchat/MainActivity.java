@@ -34,10 +34,10 @@ public class MainActivity extends ListActivity {
     private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	private String phone_number;
 	private String display_name;
-	private Firebase eventsRef;
-	private Firebase createdEventsRef;
-	private Firebase userEventsRef;
-	private Firebase eventStatusRef;
+	private Firebase eventsRef = new Firebase(FIREBASE_URL).child("events");
+	private Firebase createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
+	private Firebase userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
+	private Firebase eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
 	private ValueEventListener connectedListener;
 	private CreatedEventListAdapter createdEventListAdapter;
 	private GlobalClass global;
@@ -54,41 +54,47 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
 		global = (GlobalClass) getApplication();
 		phone_number = global.phone_number;
 		display_name = global.display_name;
+		
+		setContentView(R.layout.activity_main);
+		addNewEventButton();
+		addSelectFriendsButton();
+	}
+	
+	
 
-		eventsRef = new Firebase(FIREBASE_URL).child("events");
-		createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
-		userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
-		eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
+	@Override
+	public void onStart() {
+		super.onStart();
+		final ListView listView = getListView();
+		createdEventListAdapter = new CreatedEventListAdapter(createdEventsRef.child(phone_number), this,
+				R.layout.created_event, this);
+		listView.setAdapter(createdEventListAdapter);
 		
-		// Create new event button
-		findViewById(R.id.create_event_button).setOnClickListener(
-		new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-		         Intent i = new Intent(MainActivity.this, CreateNewEventNameActivity.class);    
-		         startActivityForResult(i, 2);
-			}
-		});
+		addDeleteListener(listView);
+		addPopupListener(listView);
 		
-		// Select friends button
-		findViewById(R.id.select_friends_button).setOnClickListener(
-		new View.OnClickListener() {
+		createdEventListAdapter.registerDataSetObserver(new DataSetObserver() {
 			@Override
-			public void onClick(View view) {
-				Intent i = new Intent(MainActivity.this, SelectFriendsActivity.class);
-				startActivityForResult(i, 6);
+			public void onChanged() {
+				super.onChanged();
 			}
 		});
 	}
 	
+	
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		createdEventListAdapter.cleanup();
+	}
+	
+	// Activity results for creating new event
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
 		// Created event name
 		if (requestCode == 2) {
 			if (resultCode == RESULT_OK) {
@@ -139,16 +145,33 @@ public class MainActivity extends ListActivity {
 		    }
 	    }		
 	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		final ListView listView = getListView();
-		createdEventListAdapter = new CreatedEventListAdapter(createdEventsRef.child(phone_number), this,
-				R.layout.created_event, this);
-		listView.setAdapter(createdEventListAdapter);
-		
-		// Delete event feature
+	
+	// Create new event button
+	protected void addNewEventButton() {
+		findViewById(R.id.create_event_button).setOnClickListener(
+		new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+		         Intent i = new Intent(MainActivity.this, CreateNewEventNameActivity.class);    
+		         startActivityForResult(i, 2);
+			}
+		});
+	}
+	
+	// Select friends button
+	protected void addSelectFriendsButton() {
+		findViewById(R.id.select_friends_button).setOnClickListener(
+		new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Intent i = new Intent(MainActivity.this, SelectFriendsActivity.class);
+				startActivityForResult(i, 6);
+			}
+		});
+	}
+	
+	// Delete event feature
+	protected void addDeleteListener(ListView listView) {
 		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
@@ -182,9 +205,10 @@ public class MainActivity extends ListActivity {
  				return true;
             }
         });
-
-		
-		// Open popup for attendee status listener
+	}
+	
+	// Open popup for attendee status listener
+	protected void addPopupListener(ListView listView) {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 		   @Override
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -195,8 +219,6 @@ public class MainActivity extends ListActivity {
 			    dialog.setContentView(R.layout.created_event_details);
 			    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 			    
-			    
-				
 		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
 		        final TextView dateText = (TextView)dialog.findViewById(R.id.date);
 		        final TextView timeText = (TextView)dialog.findViewById(R.id.time);
@@ -213,7 +235,6 @@ public class MainActivity extends ListActivity {
 					    	 timeText.setText(event.getDate().getTime());
 					    	 
 					    	 // Listen to event status and remove listener when the dialog is closed
-
 					    	 final ValueEventListener statusListener = eventStatusRef.child(eventId).addValueEventListener(new ValueEventListener() {
 							     @Override
 							     public void onDataChange(DataSnapshot snapshot) {
@@ -308,23 +329,9 @@ public class MainActivity extends ListActivity {
 		   }
 		         
 		});
-		
-		createdEventListAdapter.registerDataSetObserver(new DataSetObserver() {
-			@Override
-			public void onChanged() {
-				super.onChanged();
-				// listView.setSelection(chatListAdapter.getCount() - 1);
-			}
-		});
 	}
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		createdEventListAdapter.cleanup();
-	}
-
-	private void createEvent() {
+	protected void createEvent() {
 		Date date = new Date(new_event_year, new_event_month, new_event_day, new_event_hour, new_event_minute);
 		Event event = new Event(new_event_name, phone_number, date, new_event_attendees);
 		
@@ -348,8 +355,8 @@ public class MainActivity extends ListActivity {
 		}
 	}
 	
-	private void removeEvent(final String eventId) {
-		// Remove from event list and return removed event
+	// Remove from event list and return removed event
+	protected void removeEvent(final String eventId) {
 		eventsRef.addChildEventListener(new ChildEventListener() {
 		    @Override
 		    public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
@@ -380,7 +387,7 @@ public class MainActivity extends ListActivity {
 		eventsRef.child(eventId).removeValue();
 	}
 	
-	public void removeEventDependencies(String eventId, Event event) {
+	protected void removeEventDependencies(String eventId, Event event) {
 		if (event != null) {
 			// Remove event from this user's created events
 			createdEventsRef.child(phone_number).child(eventId).removeValue();
@@ -395,7 +402,7 @@ public class MainActivity extends ListActivity {
 		}
 	}
 	
-	private Object getItem(int position) {
+	protected Object getItem(int position) {
 		return createdEventListAdapter.getItem(position);
 	}
 	
