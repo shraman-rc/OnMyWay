@@ -28,6 +28,7 @@ import com.firebase.client.ValueEventListener;
 public class TabHostActivity extends TabActivity  {
 	private GlobalClass global;
 	private ValueEventListener connectedListener;
+	private Dialog connectedDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +43,15 @@ public class TabHostActivity extends TabActivity  {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean connected = (Boolean)dataSnapshot.getValue();
                 if (connected) {
-                    Toast.makeText(TabHostActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(TabHostActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
+                    connectedDialog.dismiss();
                 } else {
-                    Toast.makeText(TabHostActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(TabHostActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
+                    connectedDialog = new Dialog(TabHostActivity.this);
+                    connectedDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    connectedDialog.setCancelable(false);
+                    connectedDialog.setContentView(R.layout.connection_status);
+                    connectedDialog.show();
                 }
             }
 

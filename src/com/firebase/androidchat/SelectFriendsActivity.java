@@ -25,7 +25,7 @@ import com.firebase.client.Firebase;
 public class SelectFriendsActivity extends ListActivity{
 
 	private static final int PICK_CONTACT_REQUEST = 1;
-	private Map<String, String> friends = new HashMap<>();
+	private Map<String, String> friends = new HashMap<String, String>();
 	private ArrayAdapter<String> adapter;
 	
 	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
