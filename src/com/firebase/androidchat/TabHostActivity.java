@@ -48,8 +48,16 @@ public class TabHostActivity extends TabActivity  {
                 boolean connected = (Boolean)dataSnapshot.getValue();
                 if (connected) {
                     // Toast.makeText(TabHostActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
+                	System.out.println("showing" + connectedDialog.isShowing());
+                	System.out.println("window" + connectedDialog.getWindow());
+
                     if (connectedDialog.isShowing() && connectedDialog.getWindow() != null) {
-                    	connectedDialog.dismiss();
+                    	System.out.println("crash");
+                    }
+                    try {
+                		connectedDialog.dismiss();
+                    } catch (Exception e) {
+                    	
                     }
                 } else {
                     // Toast.makeText(TabHostActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
@@ -90,14 +98,6 @@ public class TabHostActivity extends TabActivity  {
         tabHost.addTab(eventsSpec);
         tabHost.addTab(createdEventsSpec);
         tabHost.addTab(settingsSpec);
-	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		if (connectedDialog.isShowing() && connectedDialog.getWindow() != null) {
-        	connectedDialog.dismiss();
-        }
 	}
 	
 	private void setupUser() {

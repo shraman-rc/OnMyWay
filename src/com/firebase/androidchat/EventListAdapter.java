@@ -39,7 +39,6 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
 		     @Override
 		     public void onDataChange(DataSnapshot snapshot) {
 		    	 if (snapshot != null) {
-		    		 System.out.println(snapshot);
 		    		 Event event = snapshot.getValue(Event.class);
 		    		 nameText.setText(event.getName());
 			    	 dateText.setText(event.getDate().getDate());
