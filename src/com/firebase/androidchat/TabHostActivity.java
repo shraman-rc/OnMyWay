@@ -48,12 +48,6 @@ public class TabHostActivity extends TabActivity  {
                 boolean connected = (Boolean)dataSnapshot.getValue();
                 if (connected) {
                     // Toast.makeText(TabHostActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
-                	System.out.println("showing" + connectedDialog.isShowing());
-                	System.out.println("window" + connectedDialog.getWindow());
-
-                    if (connectedDialog.isShowing() && connectedDialog.getWindow() != null) {
-                    	System.out.println("crash");
-                    }
                     try {
                 		connectedDialog.dismiss();
                     } catch (Exception e) {

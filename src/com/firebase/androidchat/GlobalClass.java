@@ -17,6 +17,7 @@ public class GlobalClass extends android.app.Application {
 	public Firebase createdEventsRef;
 	public Firebase userEventsRef;
 	public Firebase eventStatusRef;
+	public Firebase userPingsRef;
 	public Firebase usersRef;
 	public Firebase friendsRef;
 
@@ -29,6 +30,7 @@ public class GlobalClass extends android.app.Application {
     	createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
     	userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
     	eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
+    	userPingsRef =  new Firebase(FIREBASE_URL).child("userPings");
     	usersRef = new Firebase(FIREBASE_URL).child("users");
     	friendsRef = new Firebase(FIREBASE_URL).child("friends");
     }

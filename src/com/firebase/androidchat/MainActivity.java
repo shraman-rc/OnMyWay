@@ -1,6 +1,7 @@
 package com.firebase.androidchat;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +14,10 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -29,11 +30,14 @@ import com.firebase.client.ValueEventListener;
 public class MainActivity extends ListActivity {
 	protected GlobalClass global;
 	protected EventListAdapter listAdapter;
+	protected Dialog dialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		global = (GlobalClass) getApplication();
+		dialog = new Dialog(MainActivity.this);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	}
 	
 	@Override
@@ -65,15 +69,12 @@ public class MainActivity extends ListActivity {
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 		     long arg3) {
 
-			    final Dialog dialog = new Dialog(MainActivity.this);
-			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			    dialog.setContentView(layout);
-			    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 			    
 		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
 		        final TextView dateText = (TextView)dialog.findViewById(R.id.date);
 		        final TextView timeText = (TextView)dialog.findViewById(R.id.time);
-		        
+		        		        
 		        // From the event id, find the event from the events table
 		        final String eventId = listAdapter.getItem(arg2).toString();
 		        global.eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -120,7 +121,23 @@ public class MainActivity extends ListActivity {
 										    	 Event event = snapshot.getValue(Event.class);
 										    	 if (event != null) {
 										    		// Populate the attendees list
-												    List attendees = event.getAttendees();
+												    final List attendees = event.getAttendees();
+												    
+											        // Add listener to the ping button
+											        final Button pingButton = (Button)dialog.findViewById(R.id.ping_button);
+											        if (pingButton != null) {
+											        	pingButton.setOnClickListener(
+									            		new View.OnClickListener() {
+									            			@Override
+									            			public void onClick(View view) {
+									            				pingButton.setEnabled(false);
+									            				pingButton.setText("Pings Sent!");
+									            		        pingAll(eventId, attendees);
+									            			}
+									            		});
+											        }
+												    
+												    
 												    
 											    	global = (GlobalClass) getApplication();
 											    	for (Object attendee : attendees) {
@@ -181,6 +198,17 @@ public class MainActivity extends ListActivity {
 		         
 		});
 	}
+	
+	// Ping all
+	protected void pingAll(String eventId, List attendees) {
+		Calendar c = Calendar.getInstance(); 
+		int seconds = c.get(Calendar.SECOND);
+		for(Object attendee : attendees) {
+			// Update ping table
+			
+			global.userPingsRef.child(attendee.toString()).child(eventId).setValue(seconds);
+		}
+	}
 
 	// Remove from event list and return removed event
 	protected void creatorRemoveEvent(final String eventId) {
@@ -225,6 +253,10 @@ public class MainActivity extends ListActivity {
 		if (event != null) {
 			for(Object attendee : event.getAttendees()) {
 				global.userEventsRef.child(attendee.toString()).child(eventId).removeValue();
+			}
+			
+			for(Object attendee : event.getAttendees()) {
+				global.userPingsRef.child(attendee.toString()).child(eventId).removeValue();
 			}
 		}
 	}

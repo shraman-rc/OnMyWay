@@ -33,7 +33,8 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
         final TextView nameText = (TextView)view.findViewById(R.id.name);
         final TextView dateText = (TextView)view.findViewById(R.id.date);
         final TextView timeText = (TextView)view.findViewById(R.id.time);
-        view.setBackgroundColor(0xFF00FF00);
+        // view.setBackgroundColor(0xFF00FF00);
+        
         // From the event id, find the event from the events table
         eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
 		     @Override

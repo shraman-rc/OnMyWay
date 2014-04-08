@@ -176,5 +176,10 @@ public class CreatedEventsActivity extends MainActivity {
 		for(String attendee : new_event_attendees) {
 			global.eventStatusRef.child(newEventRef.getName()).child(attendee).setValue("?");
 		}
+		
+		// Allocate ping entries
+		for(String attendee : new_event_attendees) {
+			global.userPingsRef.child(attendee).child(newEventRef.getName()).setValue("0");
+		}
 	}
 }
