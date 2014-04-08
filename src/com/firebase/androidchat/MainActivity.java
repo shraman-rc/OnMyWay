@@ -137,8 +137,6 @@ public class MainActivity extends ListActivity {
 									            		});
 											        }
 												    
-												    
-												    
 											    	global = (GlobalClass) getApplication();
 											    	for (Object attendee : attendees) {
 											    		// Figure out the attendee name from the phone number
