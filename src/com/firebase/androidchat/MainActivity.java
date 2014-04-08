@@ -31,16 +31,19 @@ import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
 public class MainActivity extends ListActivity {
-    private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
-	private String phone_number;
-	private String display_name;
-	private Firebase eventsRef = new Firebase(FIREBASE_URL).child("events");
-	private Firebase createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
-	private Firebase userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
-	private Firebase eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
+	// Inherited
+	protected static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
+	protected String phone_number;
+	protected String display_name;
+	protected Firebase eventsRef = new Firebase(FIREBASE_URL).child("events");
+	protected Firebase createdEventsRef = new Firebase(FIREBASE_URL).child("createdEvents");
+	protected Firebase userEventsRef = new Firebase(FIREBASE_URL).child("userEvents");
+	protected Firebase eventStatusRef = new Firebase(FIREBASE_URL).child("eventStatus");
+	protected GlobalClass global;
+	
+	// Not inherited
 	private ValueEventListener connectedListener;
-	private CreatedEventListAdapter createdEventListAdapter;
-	private GlobalClass global;
+	private EventListAdapter createdEventListAdapter;
 	
 	// Used with new event creation
 	private String new_event_name;
@@ -63,14 +66,12 @@ public class MainActivity extends ListActivity {
 		addSelectFriendsButton();
 	}
 	
-	
-
 	@Override
 	public void onStart() {
 		super.onStart();
 		final ListView listView = getListView();
-		createdEventListAdapter = new CreatedEventListAdapter(createdEventsRef.child(phone_number), this,
-				R.layout.created_event, this);
+		createdEventListAdapter = new EventListAdapter(createdEventsRef.child(phone_number), this,
+				R.layout.event, this);
 		listView.setAdapter(createdEventListAdapter);
 		
 		addDeleteListener(listView);
@@ -193,7 +194,7 @@ public class MainActivity extends ListActivity {
  						removeEvent(eventId);
  						dialog.dismiss();
  					}
- 				}); 				
+ 				});
  				Button buttonCancel = (Button) dialog.findViewById(R.id.cancel_button);
  				buttonCancel.setOnClickListener(new OnClickListener() {
  					@Override
@@ -216,7 +217,7 @@ public class MainActivity extends ListActivity {
 
 			    final Dialog dialog = new Dialog(MainActivity.this);
 			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			    dialog.setContentView(R.layout.created_event_details);
+			    dialog.setContentView(R.layout.event_details);
 			    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 			    
 		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
@@ -342,11 +343,11 @@ public class MainActivity extends ListActivity {
 		newEventRef.setValue(event, event.getDate().getDateAsString());
 		
 		// Add event to user's created events
-		createdEventsRef.child(phone_number).push().setValue(newEventRef.getName(), event.getDate().getDateAsString());
+		createdEventsRef.child(phone_number).child(newEventRef.getName()).setValue(newEventRef.getName(), event.getDate().getDateAsString());
 		
 		// Add event to invitees' lists
 		for(String attendee : new_event_attendees) {
-			userEventsRef.child(attendee).child(newEventRef.getName()).setValue("0", event.getDate().getDateAsString());
+			userEventsRef.child(attendee).child(newEventRef.getName()).setValue(newEventRef.getName(), event.getDate().getDateAsString());
 		}
 		
 		// Allocate event status entry
