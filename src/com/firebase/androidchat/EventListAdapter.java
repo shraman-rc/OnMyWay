@@ -2,6 +2,8 @@ package com.firebase.androidchat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -31,7 +33,7 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
         final TextView nameText = (TextView)view.findViewById(R.id.name);
         final TextView dateText = (TextView)view.findViewById(R.id.date);
         final TextView timeText = (TextView)view.findViewById(R.id.time);
-        
+        view.setBackgroundColor(0xFF00FF00);
         // From the event id, find the event from the events table
         eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
 		     @Override

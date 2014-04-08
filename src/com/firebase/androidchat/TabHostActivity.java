@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.GenericTypeIndicator;
@@ -38,20 +37,24 @@ public class TabHostActivity extends TabActivity  {
 		global = (GlobalClass) getApplication();
 		
 		// Make sure user is connected to the database at all times
+		connectedDialog = new Dialog(TabHostActivity.this);
+        connectedDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        connectedDialog.setCancelable(false);
+        connectedDialog.setContentView(R.layout.connection_status);
+        
 		connectedListener = global.ref.getRoot().child(".info/connected").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean connected = (Boolean)dataSnapshot.getValue();
                 if (connected) {
                     // Toast.makeText(TabHostActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
-                    connectedDialog.dismiss();
+                    if (connectedDialog.isShowing() && connectedDialog.getWindow() != null) {
+                    	connectedDialog.dismiss();
+                    }
                 } else {
                     // Toast.makeText(TabHostActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
-                    connectedDialog = new Dialog(TabHostActivity.this);
-                    connectedDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    connectedDialog.setCancelable(false);
-                    connectedDialog.setContentView(R.layout.connection_status);
-                    connectedDialog.show();
+                	//connectedDialog.onAttachedToWindow
+                	connectedDialog.show();
                 }
             }
 
@@ -87,6 +90,14 @@ public class TabHostActivity extends TabActivity  {
         tabHost.addTab(eventsSpec);
         tabHost.addTab(createdEventsSpec);
         tabHost.addTab(settingsSpec);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (connectedDialog.isShowing() && connectedDialog.getWindow() != null) {
+        	connectedDialog.dismiss();
+        }
 	}
 	
 	private void setupUser() {
