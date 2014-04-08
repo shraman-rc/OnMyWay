@@ -20,8 +20,10 @@ public class GlobalClass extends android.app.Application {
 	public Firebase userPingsRef;
 	public Firebase usersRef;
 	public Firebase friendsRef;
-
 	
+	// temp var
+	public Map<String, String> attendees = new HashMap<String, String>();
+ 	
 	@Override
     public void onCreate() {
         super.onCreate();

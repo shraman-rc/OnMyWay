@@ -1,5 +1,7 @@
 package com.firebase.androidchat;
 
+import java.util.HashMap;
+
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,6 +13,7 @@ import com.firebase.client.Firebase;
 public class ButtonClickReceiver  extends BroadcastReceiver {
 	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	private Firebase eventStatusRef;
+	private String display_name;
 	private String phone_number;
 
 	@Override
@@ -23,16 +26,17 @@ public class ButtonClickReceiver  extends BroadcastReceiver {
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
 			String eventId = extras.getString("eventId");
+			display_name = extras.getString("display_name");
 			phone_number = extras.getString("phone_number");
-			Firebase userStatusRef = eventStatusRef.child(eventId).child(phone_number);;
+			Firebase userStatusRef = eventStatusRef.child(eventId).child(phone_number);
 			if (intent.getAction().equals("omw")) {
-				userStatusRef.setValue("On my way!");
+				userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "On my way!"); }});
 				/* Request location updates */
 				/*Intent locationRequest = new Intent (context, LocationService.class);
 				context.startService(locationRequest);*/
 			}
 			else {
-				userStatusRef.setValue("Not coming.");
+				userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "Not coming."); }});
 			}
 		}
 	}

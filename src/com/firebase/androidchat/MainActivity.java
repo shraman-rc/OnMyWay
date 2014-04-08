@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -80,7 +81,7 @@ public class MainActivity extends ListActivity {
 		        global.eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
 				     @Override
 				     public void onDataChange(DataSnapshot snapshot) {
-				    	 Event event = snapshot.getValue(Event.class);
+				    	 final Event event = snapshot.getValue(Event.class);
 				    	 if (event != null) {
 					    	 nameText.setText(event.getName());
 					    	 dateText.setText(event.getDate().getDate());
@@ -90,73 +91,33 @@ public class MainActivity extends ListActivity {
 					    	 final ValueEventListener statusListener = global.eventStatusRef.child(eventId).addValueEventListener(new ValueEventListener() {
 							     @Override
 							     public void onDataChange(DataSnapshot snapshot) {
-							    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
-							    	 Map<String, String> values = snapshot.getValue(t);
-							         if (values != null) {
-							        	 // Convert to list of maps
-							        	 global = (GlobalClass) getApplication();
-							        	 List<Map<String, String>> statuses = new ArrayList();
-							        	 for(Entry<String, String> entry : values.entrySet()) {
-							        		 Map<String, String> newEntry = new HashMap<String, String>();
-							        		 
-							        		 // Figure out the attendee name
-							        		 String name = "";
-								    		for (Entry<String, String> entry2 : global.friends.entrySet()) {
-								    		    if (entry.getKey().equals(entry2.getValue())) {
-								    		           name = entry2.getKey();
-								    		           break;
-								    		    }
-								    		}
-							        		 newEntry.put("name", name);
-							        		 newEntry.put("status", entry.getValue());
-							        		 statuses.add(newEntry);
-							        	 }
-							        	 
-							        	 final List<Map<String, String>> finalStatuses = statuses;
-							        	 
-							        	 // Get the event
-								    	 global.eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
+							    	 GenericTypeIndicator<Map<String,Map<String, String>>> t = new GenericTypeIndicator<Map<String,Map<String, String>>>() {};
+							    	 final Map<String, Map<String, String>> statusMap = snapshot.getValue(t);
+							    	 if (statusMap != null) {
+							    		 final List<Map<String, String>> statuses = new ArrayList<>(statusMap.values());
+							        	 // Get the event attendees
+								    	 global.eventsRef.child(eventId).child("attendees").addListenerForSingleValueEvent(new ValueEventListener() {
 										     @Override
 										     public void onDataChange(DataSnapshot snapshot) {
-										    	 Event event = snapshot.getValue(Event.class);
-										    	 if (event != null) {
-										    		// Populate the attendees list
-												    final List attendees = event.getAttendees();
-												    
-											        // Add listener to the ping button
-											        final Button pingButton = (Button)dialog.findViewById(R.id.ping_button);
-											        if (pingButton != null) {
-											        	pingButton.setOnClickListener(
-									            		new View.OnClickListener() {
-									            			@Override
-									            			public void onClick(View view) {
-									            				pingButton.setEnabled(false);
-									            				pingButton.setText("Pings Sent!");
-									            		        pingAll(eventId, attendees);
-									            			}
-									            		});
-											        }
-												    
-											    	global = (GlobalClass) getApplication();
-											    	for (Object attendee : attendees) {
-											    		// Figure out the attendee name from the phone number
-											    		String name = "";
-											    		for (Entry<String, String> entry : global.friends.entrySet()) {
-											    		    if (attendee.equals(entry.getValue())) {
-											    		           name = entry.getKey();
-											    		           break;
-											    		    }
-											    		}
-
-											    		ListView listView = (ListView) dialog.findViewById(R.id.attendees);
-											            SimpleAdapter adapter = new SimpleAdapter(MainActivity.this,
-											            		  finalStatuses, 
-											            	      R.layout.rowlayout, 
-											            	      new String[] {"name", "status"}, 
-											            	      new int[] {R.id.name, R.id.status});
-											     		listView.setAdapter(adapter);  
-									                }
-										    	 } 
+										    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
+										    	 final Map<String, String> attendees = snapshot.getValue(t);
+										    	 if (attendees != null) {
+										    		 
+										    		// Add listener to the ping button
+										    		final Button pingButton = (Button)dialog.findViewById(R.id.ping_button);
+										    		addPingButtonListener(pingButton, eventId, attendees);
+											        
+											        // Set the adapter
+										    		ListView listView = (ListView) dialog.findViewById(R.id.attendees);
+										            final SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, statuses, R.layout.rowlayout, 
+										            	      new String[] {"name", "status"}, new int[] {R.id.name, R.id.status});
+										     		listView.setAdapter(adapter);
+										     		
+										     		// Add listener for deletion of attendees if user is creator
+										     		if (event.getCreator().equals(global.phone_number)) {
+										     			addAttendeeDeleteListener(listView, adapter, statusMap, eventId);
+										     		}
+										    	 }
 										     }
 
 										     @Override
@@ -165,8 +126,6 @@ public class MainActivity extends ListActivity {
 										     }
 										});
 							         }
-							         
-							      
 							     }
 
 							     @Override
@@ -197,66 +156,122 @@ public class MainActivity extends ListActivity {
 		});
 	}
 	
+	// Add ping button listener
+	protected void addPingButtonListener(final Button pingButton, final String eventId, final Map<String, String> attendees) {
+		if (pingButton != null) {
+        	pingButton.setOnClickListener(
+    		new View.OnClickListener() {
+    			@Override
+    			public void onClick(View view) {
+    				pingButton.setEnabled(false);
+    				pingButton.setText("Pings Sent!");
+    		        pingAll(eventId, attendees);
+    			}
+    		});
+        }
+	}
+	
 	// Ping all
-	protected void pingAll(String eventId, List attendees) {
+	protected void pingAll(String eventId, Map<String, String> attendees) {
 		Calendar c = Calendar.getInstance(); 
 		int seconds = c.get(Calendar.SECOND);
-		for(Object attendee : attendees) {
-			// Update ping table
-			
+		for(Object attendee : attendees.keySet()) {
 			global.userPingsRef.child(attendee.toString()).child(eventId).setValue(System.currentTimeMillis());
 		}
+	}
+	
+	// Add listener for deletion of attendees
+	protected void addAttendeeDeleteListener(ListView listView, final SimpleAdapter adapter, final Map<String, Map<String, String>> statusMap, final String eventId) {
+		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                    int pos, long arg3) {
+            	final Map<String, String> entry = (Map<String, String>) adapter.getItem(pos);
+ 				
+ 				TextView nameText = (TextView) arg1.findViewById(R.id.name);
+ 				final String name = nameText.getText().toString();
+            	
+ 				String number = "";
+            	// Find the user phone number
+				for (Entry<String, Map<String, String>> e : statusMap.entrySet()) {
+					if (e.getValue().get("name").equals(name)) {
+						number = e.getKey();
+					}
+				}
+				final String finalNumber = number;
+            	
+            	// Creator cannot delete self
+				if (!number.equals(global.phone_number)) {
+					final Dialog dialog = new Dialog(MainActivity.this);
+	 			    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	 				dialog.setContentView(R.layout.dialog);
+	 				TextView text = (TextView) dialog.findViewById(R.id.message);
+	 				text.setText("Remove " + name + "?");
+	 				Button buttonOkay = (Button) dialog.findViewById(R.id.okay_button);
+	 				buttonOkay.setOnClickListener(new OnClickListener() {
+	 					@Override
+	 					public void onClick(View v) {
+	 						removeAttendeeFromEvent(eventId, finalNumber);
+		 					dialog.dismiss();
+	 					}
+	 				});
+	 				Button buttonCancel = (Button) dialog.findViewById(R.id.cancel_button);
+	 				buttonCancel.setOnClickListener(new OnClickListener() {
+	 					@Override
+	 					public void onClick(View v) {
+	 						dialog.dismiss();
+	 					}
+	 				});
+	 				dialog.show();
+	 					
+				}
+				return true;
+            }
+        });
 	}
 
 	// Remove from event list and return removed event
 	protected void creatorRemoveEvent(final String eventId) {
-		
-		// Remove event from this user's created events
 		global.createdEventsRef.child(global.phone_number).child(eventId).removeValue();
-		
-		// Remove entry from event status
 		global.eventStatusRef.child(eventId).removeValue();
+		global.eventsRef.child(eventId).child("attendees").addListenerForSingleValueEvent(new ValueEventListener() {
+		     @Override
+		     public void onDataChange(DataSnapshot snapshot) {
+		    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
+		    	 final Map<String, String> attendees = snapshot.getValue(t);
+		    	 if (attendees != null) {
+		    		 removeEventAttendees(eventId, attendees);
+		    		 global.eventsRef.child(eventId).removeValue();
+		    	 }
+		     }
+
+		     @Override
+		     public void onCancelled() {
+		         System.err.println("Listener was cancelled");
+		     }
+		});
+
 		
-		global.eventsRef.addChildEventListener(new ChildEventListener() {
-		    @Override
-		    public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-
-		    }
-
-		    @Override
-		    public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
-
-		    }
-
-		    @Override
-		    public void onChildRemoved(DataSnapshot snapshot) {
-		    	Event event = snapshot.getValue(Event.class);
-		    	removeEventAttendees(eventId, event);
-		    }
-
-		    @Override
-		    public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
-
-		    }
-
-		    @Override
-		    public void onCancelled() {
-
-		    }
-		});	
-		global.eventsRef.child(eventId).removeValue();
+		
 	}
 	
-	protected void removeEventAttendees(String eventId, Event event) {
-		if (event != null) {
-			for(Object attendee : event.getAttendees()) {
-				global.userEventsRef.child(attendee.toString()).child(eventId).removeValue();
+	protected void removeEventAttendees(String eventId, Map<String, String> attendees) {
+		if (attendees != null) {
+			for(String attendee : attendees.keySet()) {
+				global.userEventsRef.child(attendee).child(eventId).removeValue();
 			}
 			
-			for(Object attendee : event.getAttendees()) {
-				global.userPingsRef.child(attendee.toString()).child(eventId).removeValue();
+			for(String attendee : attendees.keySet()) {
+				global.userPingsRef.child(attendee).child(eventId).removeValue();
 			}
 		}
+	}
+	
+	protected void removeAttendeeFromEvent(String eventId, String attendee) {
+		global.eventStatusRef.child(eventId).child(attendee).removeValue();
+		global.eventsRef.child(eventId).child("attendees").child(attendee).removeValue();
+		global.userEventsRef.child(attendee).child(eventId).removeValue();
+		global.userPingsRef.child(attendee).child(eventId).removeValue();
 	}
 	
 	/*protected Object getItem(EventListAdapter listAdapter, int position) {

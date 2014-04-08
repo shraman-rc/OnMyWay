@@ -2,6 +2,8 @@ package com.firebase.androidchat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
@@ -61,23 +63,22 @@ public class CreateNewEventAttendeesActivity extends Activity {
    
 		   @Override
 		   public void onClick(View v) {
-			   ArrayList<String> attendees = new ArrayList();
+			global.attendees = new HashMap<String, String>();
 		    for(int i = 0; i < names.length; i++) {
 		     
 		    if(checkedStates.get(i) == true) {
 		    	String name = names[i];
 			      if (global.friends.containsKey(name)) {
 			    	  String number = global.friends.get(name);
-			    	  attendees.add(number);
+			    	  global.attendees.put(number, name);
 			      }
 		    }
 		    }
 
 		    // Must have at least one attendee
-		    if(attendees.size() > 0) {
+		    if(global.attendees.size() > 0) {
 			    Intent resultIntent = new Intent();
-				resultIntent.putStringArrayListExtra("attendees", attendees);
-				setResult(Activity.RESULT_OK, resultIntent);
+			    setResult(Activity.RESULT_OK, resultIntent);
 				finish();
 		    }
 		   }

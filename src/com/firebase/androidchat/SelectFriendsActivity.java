@@ -20,13 +20,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.ValueEventListener;
 
 public class SelectFriendsActivity extends ListActivity{
 
 	private static final int PICK_CONTACT_REQUEST = 1;
 	private Map<String, String> friends = new HashMap<String, String>();
 	private ArrayAdapter<String> adapter;
+	private GlobalClass global;
 	
 	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	
@@ -36,7 +39,7 @@ public class SelectFriendsActivity extends ListActivity{
 		setContentView(R.layout.activity_select_friends);
 		
 		// Retrieve friends list from global class
-		GlobalClass global = (GlobalClass) getApplication();
+		global = (GlobalClass) getApplication();
 		if(global.friends != null) {
 			this.friends = global.friends;
 		}
@@ -44,7 +47,6 @@ public class SelectFriendsActivity extends ListActivity{
 		// Return button
 		findViewById(R.id.return_button).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	GlobalClass global = (GlobalClass) getApplication();
             	global.friends = friends;
             	Firebase friendsRef = new Firebase(FIREBASE_URL).child("friends");
             	friendsRef.child(global.phone_number).setValue(friends);
@@ -135,16 +137,32 @@ public class SelectFriendsActivity extends ListActivity{
 	            String number = cursor.getString(column);
 		    	
  				// Format name to only include alphabetic characters
- 				name = name.replaceAll("[^A-Za-z ]+", "");
+ 				final String finalName = name.replaceAll("[^A-Za-z ]+", "");
  				
-	           // Format the number properly
+	            // Format the number properly
 		        number = number.replaceAll("\\D+","");
-		    	number = (number.length() < 11) ? "1" + number : number;
+		    	final String finalNumber = (number.length() < 11) ? "1" + number : number;
+		    	
+		    	// Add friend to database if doesn't exist
+		    	global.usersRef.child(number).addListenerForSingleValueEvent(new ValueEventListener() {
+				     @Override
+				     public void onDataChange(DataSnapshot snapshot) {
+				    	 Object value = snapshot.getValue();
+				    	 if (value == null) {
+				    		 global.usersRef.child(finalNumber).setValue(finalName);
+				    	 }
+				     }
+				     
+				     @Override
+				     public void onCancelled() {
+				         System.err.println("Listener was cancelled");
+				     }
+		    	});
 
-	            
-                friends.put(name, number);
-                refreshList();
-	    		
+	            if (!finalNumber.equals(global.phone_number)) {
+	                friends.put(finalName, finalNumber);
+	                refreshList();
+	            }
 	        }
 	    }
 	}

@@ -1,19 +1,20 @@
 package com.firebase.androidchat;
 
 import java.util.List;
+import java.util.Map;
 
 public class Event {
 
     private String name;
     private String creator;
     private Date date;
-    private List attendees;
+    private Map<String, String> attendees;
 
     // Required default constructor for Firebase object mapping
     @SuppressWarnings("unused")
     private Event() { }
 
-    Event(String name, String creator, Date date, List attendees) {
+    Event(String name, String creator, Date date, Map<String, String> attendees) {
         this.name = name;
         this.creator = creator;
         this.date = date;
@@ -33,7 +34,7 @@ public class Event {
     	return date;
     }
     
-    public List getAttendees() {
+    public Map<String, String> getAttendees() {
     	return attendees;
     }
 }

@@ -73,6 +73,7 @@ public class TabHostActivity extends TabActivity  {
 		if (global.phone_number != null) {
 			Intent serviceIntent = new Intent(this, BackgroundService.class);
 			serviceIntent.putExtra("phone_number", global.phone_number);
+			serviceIntent.putExtra("display_name", global.display_name);
 			startService(serviceIntent);
 		}
 
@@ -111,37 +112,17 @@ public class TabHostActivity extends TabActivity  {
 		global.display_name = prefs.getString("display_name", null);
 		if (global.display_name != null) {
 			storeDisplayName(global.display_name);
+		} else {
+			getNewDisplayName();
 		}
 		
 
 		if (global.phone_number == null) {
 			TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-			global.phone_number = tMgr.getLine1Number();
+			String number = tMgr.getLine1Number();
+			number = number.replaceAll("\\D+","");
+			global.phone_number = (number.length() < 11) ? "1" + number : number;
 			prefs.edit().putString("phone_number", global.phone_number).commit();
-		}
-		
-		// If display name is not stored in shared prefs, try to get from database
-		if (global.display_name == null) {
-			global.usersRef.child(global.phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
-			     @Override
-			     public void onDataChange(DataSnapshot snapshot) {
-			         Object value = snapshot.getValue();
-			         if (value != null) {
-			        	 User user = snapshot.getValue(User.class);
-				         if (user != null) {
-				        	 global.display_name = user.getName();
-				        	 storeDisplayName(global.display_name);
-				         }
-			         } else {
-			             getNewDisplayName();
-			         }
-			     }
-
-			     @Override
-			     public void onCancelled() {
-			         System.err.println("Listener was cancelled");
-			     }
-			 });
 		}
 		
 		// Retrieve friends list if exists
@@ -151,7 +132,6 @@ public class TabHostActivity extends TabActivity  {
 		    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
 		    	 Map<String, String> value = snapshot.getValue(t);
 		         if (value != null) {
-			         GlobalClass global = (GlobalClass) getApplication();
 			         global.friends = value;
 		         }
 		     }
@@ -169,7 +149,7 @@ public class TabHostActivity extends TabActivity  {
 		global.display_name = display_name;
 		
 		// Store display name in database
-		global.usersRef.child(global.phone_number).setValue(new User(global.display_name, global.phone_number));
+		global.usersRef.child(global.phone_number).setValue(global.display_name);
         
         // Store display name in shared prefs
 		SharedPreferences prefs = getApplication().getSharedPreferences(

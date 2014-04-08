@@ -18,6 +18,7 @@ public class BackgroundService extends Service {
 	private Firebase userPingRef;
 	private Firebase eventRef;
 	private ChildEventListener userPingListener;
+	private String display_name;
 	private String phone_number;
 	
 	@Override
@@ -31,12 +32,13 @@ public class BackgroundService extends Service {
 		Bundle extras = intent.getExtras();
 		if(extras != null) {
 			phone_number = extras.getString("phone_number");
+			display_name = extras.getString("display_name");
 			
 			userPingRef = new Firebase(FIREBASE_URL).child("userPings").child(phone_number);
 			userPingListener = userPingRef.addChildEventListener(new ChildEventListener() {
 			    @Override
 			    public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
-
+			    	// Notification for "you've been added to this event" goes here
 			    }
 
 			    @Override
@@ -96,12 +98,14 @@ public class BackgroundService extends Service {
 		
 		Intent intentOmw = new Intent("omw");
 		intentOmw.putExtra("eventId", eventId);
+		intentOmw.putExtra("display_name", display_name);
 		intentOmw.putExtra("phone_number", phone_number);
 		PendingIntent pIntentOmw = PendingIntent.getBroadcast(this, 0, intentOmw, PendingIntent.FLAG_CANCEL_CURRENT);
 		
 		Intent intentNo = new Intent("no");
 	    intentNo.putExtra("eventId", eventId);
-	    intentNo.putExtra("phone_number", phone_number);
+	    intentNo.putExtra("display_name", display_name);
+	    intentOmw.putExtra("phone_number", phone_number);
 	    PendingIntent pIntentNo = PendingIntent.getBroadcast(this, 0, intentNo, PendingIntent.FLAG_CANCEL_CURRENT);
 		
 		Notification noti = new Notification.Builder(this)
