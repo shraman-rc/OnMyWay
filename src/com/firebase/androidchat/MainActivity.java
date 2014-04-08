@@ -223,7 +223,6 @@ public class MainActivity extends ListActivity {
 	 					}
 	 				});
 	 				dialog.show();
-	 					
 				}
 				return true;
             }

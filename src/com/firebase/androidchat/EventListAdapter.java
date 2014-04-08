@@ -55,6 +55,9 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
 		    		 }else if (eventTime - currentTime >=30) {view.setBackgroundColor(0xAAA7FFA7);
 		    		 }else {view.setBackgroundColor(0x00000000);}
 		    		 
+		    		 /*&& eventTime - currentTime < 2550
+view.getBackground().setAlpha(255-((eventTime-currentTime)/10))*/
+		    		 
 		    		 nameText.setText(event.getName());
 			    	 dateText.setText(event.getDate().getDate());
 			    	 timeText.setText(event.getDate().getTime());
