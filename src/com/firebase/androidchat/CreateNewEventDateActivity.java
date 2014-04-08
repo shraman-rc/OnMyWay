@@ -1,7 +1,5 @@
 package com.firebase.androidchat;
 
-import java.util.Calendar;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;

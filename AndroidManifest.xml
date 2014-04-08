@@ -27,14 +27,19 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.firebase.androidchat.MainActivity"
+            android:name="com.firebase.androidchat.MainActivity" >
+        </activity>
+        <activity
+            android:name="com.firebase.androidchat.CreatedEventsActivity"
             android:label="@string/title_activity_created_events" >
-
         </activity>
         <activity
             android:name="com.firebase.androidchat.EventsActivity"
             android:label="@string/title_activity_events" >
-			
+        </activity>
+        <activity
+            android:name="com.firebase.androidchat.SettingsActivity"
+            android:label="Settings" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.SelectFriendsActivity"

@@ -30,7 +30,6 @@ public class SelectFriendsActivity extends ListActivity{
 	
 	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

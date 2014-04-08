@@ -2,7 +2,6 @@ package com.firebase.androidchat;
 
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Context;
@@ -12,27 +11,23 @@ import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
 import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
 
 public class TabHostActivity extends TabActivity  {
-	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
-	private String phone_number;
-	private String display_name;
-	private Firebase usersRef;
-	private Firebase friendsRef;
 	private GlobalClass global;
+	private ValueEventListener connectedListener;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +36,23 @@ public class TabHostActivity extends TabActivity  {
 		
 		global = (GlobalClass) getApplication();
 		
-		usersRef = new Firebase(FIREBASE_URL).child("users");
-		friendsRef = new Firebase(FIREBASE_URL).child("friends");
+		// Make sure user is connected to the database at all times
+		connectedListener = global.ref.getRoot().child(".info/connected").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean connected = (Boolean)dataSnapshot.getValue();
+                if (connected) {
+                    Toast.makeText(TabHostActivity.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(TabHostActivity.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled() {
+                // No-op
+            }
+        });
 		
 		// Make sure user has phone number and display name
 		setupUser();
@@ -59,13 +69,13 @@ public class TabHostActivity extends TabActivity  {
         Button createdEventsView = new Button(this);
         createdEventsView.setText("My Events");
         createdEventsSpec.setIndicator(createdEventsView);
-        createdEventsSpec.setContent(new Intent(this, MainActivity.class));
+        createdEventsSpec.setContent(new Intent(this, CreatedEventsActivity.class));
         
         TabSpec settingsSpec = tabHost.newTabSpec("Settings");
         Button settingsView = new Button(this);
         settingsView.setText("Settings");
         settingsSpec.setIndicator(settingsView);
-        settingsSpec.setContent(new Intent(this, SelectFriendsActivity.class));
+        settingsSpec.setContent(new Intent(this, SettingsActivity.class));
 
         tabHost.addTab(eventsSpec);
         tabHost.addTab(createdEventsSpec);
@@ -78,33 +88,30 @@ public class TabHostActivity extends TabActivity  {
 				"OnMyWayPrefs", 0);
 		// prefs.edit().clear().commit();
 		// System.out.println("Current prefs: " + prefs.getAll());
-		phone_number = prefs.getString("phone_number", null);
-		global.phone_number = phone_number;
-		display_name = prefs.getString("display_name", null);
-		if (display_name != null) {
-			storeDisplayName(display_name);
-			global.display_name = display_name;
+		global.phone_number = prefs.getString("phone_number", null);
+		global.display_name = prefs.getString("display_name", null);
+		if (global.display_name != null) {
+			storeDisplayName(global.display_name);
 		}
 		
 
-		if (phone_number == null) {
+		if (global.phone_number == null) {
 			TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-			phone_number = tMgr.getLine1Number();
-			prefs.edit().putString("phone_number", phone_number).commit();
-			global.phone_number = phone_number;
+			global.phone_number = tMgr.getLine1Number();
+			prefs.edit().putString("phone_number", global.phone_number).commit();
 		}
 		
 		// If display name is not stored in shared prefs, try to get from database
-		if (display_name == null) {
-			usersRef.child(phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
+		if (global.display_name == null) {
+			global.usersRef.child(global.phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
 			     @Override
 			     public void onDataChange(DataSnapshot snapshot) {
 			         Object value = snapshot.getValue();
 			         if (value != null) {
 			        	 User user = snapshot.getValue(User.class);
 				         if (user != null) {
-				        	 display_name = user.getName();
-				        	 storeDisplayName(display_name);
+				        	 global.display_name = user.getName();
+				        	 storeDisplayName(global.display_name);
 				         }
 			         } else {
 			             getNewDisplayName();
@@ -119,7 +126,7 @@ public class TabHostActivity extends TabActivity  {
 		}
 		
 		// Retrieve friends list if exists
-		friendsRef.child(phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
+		global.friendsRef.child(global.phone_number).addListenerForSingleValueEvent(new ValueEventListener() {
 		     @Override
 		     public void onDataChange(DataSnapshot snapshot) {
 		    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
@@ -140,12 +147,10 @@ public class TabHostActivity extends TabActivity  {
 	
 	// Stores display name in shared prefs, global, and database
 	private void storeDisplayName(String display_name) {
-		this.display_name = display_name;
-		
 		global.display_name = display_name;
 		
 		// Store display name in database
-        usersRef.child(phone_number).setValue(new User(display_name, phone_number));
+		global.usersRef.child(global.phone_number).setValue(new User(global.display_name, global.phone_number));
         
         // Store display name in shared prefs
 		SharedPreferences prefs = getApplication().getSharedPreferences(
@@ -165,8 +170,8 @@ public class TabHostActivity extends TabActivity  {
 				EditText inputText = (EditText) dialog.findViewById(R.id.display_name);
 				String input = inputText.getText().toString();
 				if (!input.equals("")) {
-					display_name = input;
-		            storeDisplayName(display_name);
+					global.display_name = input;
+		            storeDisplayName(global.display_name);
 		            dialog.dismiss();
 				}
 			}

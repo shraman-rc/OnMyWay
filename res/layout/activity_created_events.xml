@@ -7,6 +7,14 @@
         android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@+id/create_event_button"
         android:layout_alignParentTop="true" >
     </ListView>
+
+    <Button
+        android:id="@+id/create_event_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Create a New Event!" />
 </RelativeLayout>

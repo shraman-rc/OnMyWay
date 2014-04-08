@@ -12,18 +12,18 @@ import com.firebase.client.Query;
 import com.firebase.client.ValueEventListener;
 
 public class EventListAdapter extends FirebaseListAdapter<String> {
-	private static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
+	public static final String FIREBASE_URL = "https://cefbbpiir8y.firebaseio-demo.com/";
 	private Firebase eventsRef = new Firebase(FIREBASE_URL).child("events");
 	private Context context;
 	private Activity activity;
-	private GlobalClass global;
 	private String eventId;
 	private SimpleAdapter adapter;
+	
 
     public EventListAdapter(Query ref, Activity activity, int layout, Context context) {
         super(ref, String.class, layout, activity);
-        this.context = context;
         this.activity = activity;
+        this.context = context;
     }
 
     @Override
@@ -33,13 +33,13 @@ public class EventListAdapter extends FirebaseListAdapter<String> {
         final TextView timeText = (TextView)view.findViewById(R.id.time);
         
         // From the event id, find the event from the events table
-        System.out.println(eventId);
         eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
 		     @Override
 		     public void onDataChange(DataSnapshot snapshot) {
-		    	 Event event = snapshot.getValue(Event.class);
-		    	 if (event != null) {
-			    	 nameText.setText(event.getName());
+		    	 if (snapshot != null) {
+		    		 System.out.println(snapshot);
+		    		 Event event = snapshot.getValue(Event.class);
+		    		 nameText.setText(event.getName());
 			    	 dateText.setText(event.getDate().getDate());
 			    	 timeText.setText(event.getDate().getTime());
 		    	 }
