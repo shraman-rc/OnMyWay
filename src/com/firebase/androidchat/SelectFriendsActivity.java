@@ -133,10 +133,14 @@ public class SelectFriendsActivity extends ListActivity{
 	            
 	            column = cursor.getColumnIndex(Phone.NUMBER);
 	            String number = cursor.getString(column);
-	            
+		    	
+ 				// Format name to only include alphabetic characters
+ 				name = name.replaceAll("[^A-Za-z ]+", "");
+ 				
 	           // Format the number properly
 		        number = number.replaceAll("\\D+","");
 		    	number = (number.length() < 11) ? "1" + number : number;
+
 	            
                 friends.put(name, number);
                 refreshList();
