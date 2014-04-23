@@ -97,8 +97,12 @@ public class LocationService extends Service implements LocationListener {
 			Firebase userStatusRef = new Firebase(FIREBASE_URL).child("eventStatus").child(activeEvents.get(i)).child(phone_number);
 			float[] results = new float[1];
 			Location.distanceBetween(latitudes.get(i), longitudes.get(i), lat, lng, results);
-			final float distance = results[0];
-			userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "On my way! (" + distance + " meters)"); }});
+			final int distance = (int) results[0];
+			if (distance < 10000) {
+				userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "On my way! (" + distance + "m)"); }});
+			} else {
+				userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "On my way! (" + distance/1000 + "km)"); }});
+			}
 		}
 	}
 

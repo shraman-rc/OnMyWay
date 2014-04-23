@@ -65,8 +65,6 @@ public class ButtonClickReceiver  extends BroadcastReceiver {
 				    }
 				});
 				
-
-				
 			} else if (intent.getAction().equals("no")) {
 				userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "Not coming."); }});
 			}

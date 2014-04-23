@@ -51,7 +51,8 @@ public class EventsActivity extends MainActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                     int pos, long arg3) {
- 				final String eventId = listAdapter.getItem(pos).toString();
+            	Event event = (Event) listAdapter.getItem(pos);
+ 				final String eventId = listAdapter.getIdOfItem(pos);
  				
  				TextView nameText = (TextView) arg1.findViewById(R.id.name);
  				final String name = nameText.getText().toString();

@@ -146,9 +146,9 @@ public class MainActivity extends ListActivity {
 		int seconds = c.get(Calendar.SECOND);
 		for(Object attendee : attendees.keySet()) {
 			// Don't ping the creator
-			// if (!attendee.toString().equals(global.phone_number)) {
+			if (!attendee.toString().equals(global.phone_number)) {
 				global.userPingsRef.child(attendee.toString()).child(eventId).setValue(System.currentTimeMillis());
-			// }
+			}
 		}
 	}
 	

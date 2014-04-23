@@ -22,7 +22,6 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.firebase.androidchat.TabHostActivity"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:label="OnMyWay" >
              <intent-filter>
@@ -36,31 +35,26 @@
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreatedEventsActivity"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_created_events" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.EventsActivity"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_events" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.SettingsActivity"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:label="Settings" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.SelectFriendsActivity"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_select_friends" >
         </activity>
         <activity
             android:name="com.firebase.androidchat.CreateNewEventNameActivity"
-            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_create_new_event_name"
             android:windowSoftInputMode="adjustResize|stateVisible" >

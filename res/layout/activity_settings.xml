@@ -5,8 +5,16 @@
 
 
     <Button
+        android:id="@+id/change_display_name_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Change Display Name" />
+    
+    <Button
         android:id="@+id/select_friends_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/change_display_name_button"
         android:text="Add/Remove Friends" />
+    
 </RelativeLayout>

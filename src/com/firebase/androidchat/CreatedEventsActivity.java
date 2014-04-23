@@ -195,7 +195,7 @@ public class CreatedEventsActivity extends MainActivity {
 		for(String attendee : global.attendees.keySet()) {
 			// Creator doesn't need a ping entry
 			if (!attendee.equals(global.phone_number)) {
-				global.userPingsRef.child(attendee).child(newEventRef.getName()).setValue("0");
+				global.userPingsRef.child(attendee).child(newEventRef.getName()).setValue(0);
 			}
 		}
 		
