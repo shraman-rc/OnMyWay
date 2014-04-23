@@ -20,6 +20,7 @@ public class GlobalClass extends android.app.Application {
 	public Firebase userPingsRef;
 	public Firebase usersRef;
 	public Firebase friendsRef;
+	public Firebase userLocationsRef;
 	
 	// temp var
 	public Map<String, String> attendees = new HashMap<String, String>();
@@ -35,5 +36,6 @@ public class GlobalClass extends android.app.Application {
     	userPingsRef =  new Firebase(FIREBASE_URL).child("userPings");
     	usersRef = new Firebase(FIREBASE_URL).child("users");
     	friendsRef = new Firebase(FIREBASE_URL).child("friends");
+    	userLocationsRef = new Firebase(FIREBASE_URL).child("userLocations");
     }
 }

@@ -16,11 +16,11 @@ public class ButtonClickReceiver  extends BroadcastReceiver {
 	private Firebase eventStatusRef;
 	private String display_name;
 	private String phone_number;
-	/*private LocationManager locationManager;*/
+	private LocationManager locationManager;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-	    // locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+	    locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		
 		// Remove the notification that was just pressed
 		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -35,11 +35,15 @@ public class ButtonClickReceiver  extends BroadcastReceiver {
 			Firebase userStatusRef = eventStatusRef.child(eventId).child(phone_number);
 			if (intent.getAction().equals("omw")) {
 				userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "On my way!"); }});
-				// Request location updates
-				/*Intent locationRequest = new Intent (context, LocationService.class);
-				context.startService(locationRequest);*/
-			}
-			else if (intent.getAction().equals("no")) {
+
+				// Request location
+				Intent locationServiceIntent = new Intent(context, LocationService.class);
+				locationServiceIntent.putExtra("phone_number", phone_number);
+				locationServiceIntent.putExtra("display_name", display_name);
+				locationServiceIntent.putExtra("event_id", eventId);
+				context.startService(locationServiceIntent);
+				
+			} else if (intent.getAction().equals("no")) {
 				userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "Not coming."); }});
 			}
 		}

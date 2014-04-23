@@ -83,19 +83,16 @@ public class MainActivity extends ListActivity {
 							    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
 							    	 final Map<String, String> attendees = snapshot.getValue(t);
 							    	 if (attendees != null) {
-							    		 
-							    		// Add listener to the ping button
-							    		final Button pingButton = (Button)dialog.findViewById(R.id.ping_button);
-							    		addPingButtonListener(pingButton, eventId, attendees);
-								        
 								        // Set the adapter
 							    		ListView listView = (ListView) dialog.findViewById(R.id.attendees);
 							            final SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, statuses, R.layout.rowlayout, 
 							            	      new String[] {"name", "status"}, new int[] {R.id.name, R.id.status});
 							     		listView.setAdapter(adapter);
 							     		
-							     		// Add listener for deletion of attendees if user is creator
+							     		// Add listener for ping button and deletion of attendees if user is creator
 							     		if (event.getCreator().equals(global.phone_number)) {
+								    		final Button pingButton = (Button)dialog.findViewById(R.id.ping_button);
+								    		addPingButtonListener(pingButton, eventId, attendees);
 							     			addAttendeeDeleteListener(listView, adapter, statusMap, eventId);
 							     		}
 							    	 }
@@ -149,9 +146,9 @@ public class MainActivity extends ListActivity {
 		int seconds = c.get(Calendar.SECOND);
 		for(Object attendee : attendees.keySet()) {
 			// Don't ping the creator
-			if (!attendee.toString().equals(global.phone_number)) {
+			// if (!attendee.toString().equals(global.phone_number)) {
 				global.userPingsRef.child(attendee.toString()).child(eventId).setValue(System.currentTimeMillis());
-			}
+			// }
 		}
 	}
 	
