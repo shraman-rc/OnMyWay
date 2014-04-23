@@ -75,14 +75,13 @@ public class CreateNewEventLocationActivity extends Activity {
 
 					int n = address.getMaxAddressLineIndex();
 					for (int i = 0; i < n; ++i) {
-						System.out.println(address.getAddressLine(i));
 					    TextView textView = new TextView(mContext);
 					    textView.setText(address.getAddressLine(i)); 
 					    textView.setGravity(Gravity.CENTER_HORIZONTAL);
 					    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 					    addressLayout.addView(textView);
 					}
-					   
+
 					// Add next button
 					Button nextButton = new Button(mContext);
 					nextButton.setText("Next");
@@ -112,7 +111,16 @@ public class CreateNewEventLocationActivity extends Activity {
 	
 	public void returnResult(Address address) {
 		Intent resultIntent = new Intent();
-		resultIntent.putExtra("input", address);
+		if (address.hasLatitude()) {
+			resultIntent.putExtra("latitude", address.getLatitude());
+		} else {
+			resultIntent.putExtra("latitude", 999);
+		}
+		if (address.hasLongitude()) {
+			resultIntent.putExtra("longitude", address.getLongitude());
+		} else {
+			resultIntent.putExtra("longitude", 999);
+		}
 		setResult(Activity.RESULT_OK, resultIntent);
 		finish();
 	}

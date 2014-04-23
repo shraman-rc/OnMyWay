@@ -27,6 +27,8 @@ public class CreatedEventsActivity extends MainActivity {
 	private int new_event_day;
 	private int new_event_hour;
 	private int new_event_minute;
+	private double new_event_latitude;
+	private double new_event_longitude;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,19 +124,29 @@ public class CreatedEventsActivity extends MainActivity {
 				Bundle extras = data.getExtras();
 		        if(extras != null) {
 		        	new_event_name = extras.getString("input");
-		            /*Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventDateActivity.class);    
+		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventLocationActivity.class);    
 		            // Bundle options = ActivityOptions.makeCustomAnimation(CreatedEventsActivity.this, R.anim.right_slide_in, R.anim.right_slide_out).toBundle();
 		            // startActivityForResult(i, 3, options);
-		            startActivityForResult(i, 3);*/
-		            
-		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventLocationActivity.class);    
-			        startActivityForResult(i, 2);
+		            startActivityForResult(i, 3);
+		        }
+		    }
+	    }
+		
+		// Created event location
+		if (requestCode == 3) {
+			if (resultCode == RESULT_OK) {
+				Bundle extras = data.getExtras();
+		        if(extras != null) {
+		        	new_event_latitude = extras.getDouble("latitude");
+		        	new_event_longitude = extras.getDouble("longitude");
+		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventDateActivity.class);    
+		            startActivityForResult(i, 4);
 		        }
 		    }
 	    }
 		
 		// Created event date
-		if (requestCode == 3) {
+		if (requestCode == 4) {
 			if (resultCode == RESULT_OK) {
 				Bundle extras = data.getExtras();
 		        if(extras != null) {
@@ -142,26 +154,26 @@ public class CreatedEventsActivity extends MainActivity {
 		        	new_event_month = extras.getInt("month");
 		        	new_event_day = extras.getInt("day");
 		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventTimeActivity.class);    
-		            startActivityForResult(i, 4);
+		            startActivityForResult(i, 5);
 		        }
 		    }
 	    }
 		
 		// Created event time
-		if (requestCode == 4) {
+		if (requestCode == 5) {
 			if (resultCode == RESULT_OK) {
 				Bundle extras = data.getExtras();
 		        if(extras != null) {
 		        	new_event_hour = extras.getInt("hour");
 		        	new_event_minute = extras.getInt("minute");
 		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventAttendeesActivity.class);    
-		            startActivityForResult(i, 5);
+		            startActivityForResult(i, 6);
 		        }
 		    }
 	    }
 		
 		// Created event attendees
-		if (requestCode == 5) {
+		if (requestCode == 6) {
 			if (resultCode == RESULT_OK) {
 				createEvent();
 		    }
@@ -170,13 +182,14 @@ public class CreatedEventsActivity extends MainActivity {
 	
 	protected void createEvent() {
 		Date date = new Date(new_event_year, new_event_month, new_event_day, new_event_hour, new_event_minute);
+		Location location = new Location(new_event_latitude, new_event_longitude);
 		
 		// Get new event ID
 		Firebase newEventRef = global.eventsRef.push();
 		
 		// Add self to attendees and create event
         global.attendees.put(global.phone_number, global.display_name);
-        Event event = new Event(new_event_name, global.phone_number, date, global.attendees);
+        Event event = new Event(new_event_name, global.phone_number, date, location, global.attendees);
 		
 		// Allocate ping entries and add to user event and event status lists
 		for(String attendee : global.attendees.keySet()) {
