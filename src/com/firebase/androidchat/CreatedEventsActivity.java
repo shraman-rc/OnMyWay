@@ -69,14 +69,8 @@ public class CreatedEventsActivity extends MainActivity {
 		new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-		         /*Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventNameActivity.class);    
-		         startActivityForResult(i, 2);*/
-				Double myLatitude = 44.433106;
-				   Double myLongitude = 26.103687;
-				   String labelLocation = "Jorgesys @ Bucharest";
-				String urlAddress = "http://maps.google.com/maps?q="+ myLatitude  +"," + myLongitude +"("+ labelLocation + ")&iwloc=A&hl=es";     
-			    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
-			    startActivity(intent);
+		         Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventNameActivity.class);    
+		         startActivityForResult(i, 2);
 			}
 		});
 	}
@@ -128,10 +122,13 @@ public class CreatedEventsActivity extends MainActivity {
 				Bundle extras = data.getExtras();
 		        if(extras != null) {
 		        	new_event_name = extras.getString("input");
-		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventDateActivity.class);    
+		            /*Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventDateActivity.class);    
 		            // Bundle options = ActivityOptions.makeCustomAnimation(CreatedEventsActivity.this, R.anim.right_slide_in, R.anim.right_slide_out).toBundle();
 		            // startActivityForResult(i, 3, options);
-		            startActivityForResult(i, 3);
+		            startActivityForResult(i, 3);*/
+		            
+		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventLocationActivity.class);    
+			        startActivityForResult(i, 2);
 		        }
 		    }
 	    }

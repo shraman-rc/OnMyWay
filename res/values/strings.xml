@@ -8,6 +8,7 @@
     <string name="title_activity_create_new_event_date">Event Date</string>
     <string name="title_activity_create_new_event_time">Event Time</string>
     <string name="title_activity_create_new_event_attendees">Event Attendees</string>
+    <string name="title_activity_create_new_event_location">Event Location</string>
     <string name="next">Next</string>
     <string name="title_activity_select_friends">Friends List</string>
     <string name="add_friend_button">Add a friend!</string>

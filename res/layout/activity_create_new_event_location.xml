@@ -2,8 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    tools:context=".CreateNewEventNameActivity" >
+    android:orientation="vertical" >
 
     <TextView android:id="@+id/textView1"
         android:layout_width="fill_parent"
@@ -12,11 +11,12 @@
         android:layout_marginBottom="50dp"
         android:gravity="center_horizontal"
         android:textSize="20sp"
-        android:text="What is the event called?" />
+        android:text="What is the name or address of the location?" />
 
+	
 
     <EditText
-        android:id="@+id/event_name"
+        android:id="@+id/event_address"
         android:layout_marginTop="120dp"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
@@ -26,12 +26,20 @@
         android:singleLine="true" />
 
 
-
     <Button
-        android:id="@+id/next_button"
+        android:id="@+id/search_button"
+        android:layout_marginTop="210dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Search" />
+    
+    <LinearLayout
+        android:id="@+id/address"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Next" />
+        android:orientation="vertical" >
+    </LinearLayout>
+
 
 </RelativeLayout>

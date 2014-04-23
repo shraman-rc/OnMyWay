@@ -72,6 +72,12 @@
             android:screenOrientation="portrait"
             android:label="@string/title_activity_create_new_event_attendees" >
         </activity>
+        <activity
+            android:name="com.firebase.androidchat.CreateNewEventLocationActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_create_new_event_location"
+            android:windowSoftInputMode="stateVisible" >
+        </activity>
         <service
             android:name=".BackgroundService"
             android:exported="false"
