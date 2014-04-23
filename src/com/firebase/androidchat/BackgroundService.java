@@ -105,7 +105,7 @@ public class BackgroundService extends Service {
 		Intent intentNo = new Intent("no");
 	    intentNo.putExtra("eventId", eventId);
 	    intentNo.putExtra("display_name", display_name);
-	    intentOmw.putExtra("phone_number", phone_number);
+	    intentNo.putExtra("phone_number", phone_number);
 	    PendingIntent pIntentNo = PendingIntent.getBroadcast(this, 0, intentNo, PendingIntent.FLAG_CANCEL_CURRENT);
 		
 		Notification noti = new Notification.Builder(this)
@@ -114,8 +114,8 @@ public class BackgroundService extends Service {
         .setContentIntent(pOpenAppIntent)
         .addAction(R.drawable.ic_action_accept, "On my way!", pIntentOmw)
         .addAction(R.drawable.ic_action_cancel, "Not coming.", pIntentNo)
-        .setVibrate (new long[] {1,2,3,4,5})
-        .setAutoCancel(true).build();
+        .build();
+		
 		NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 	    notificationManager.notify(0, noti);
 	}

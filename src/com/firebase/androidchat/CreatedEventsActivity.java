@@ -1,11 +1,11 @@
 package com.firebase.androidchat;
 
 import java.util.HashMap;
-import java.util.List;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -62,6 +62,25 @@ public class CreatedEventsActivity extends MainActivity {
 		listAdapter.cleanup();
 	}
 	
+	
+	// Create new event button
+	protected void addNewEventButton() {
+		findViewById(R.id.create_event_button).setOnClickListener(
+		new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+		         /*Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventNameActivity.class);    
+		         startActivityForResult(i, 2);*/
+				Double myLatitude = 44.433106;
+				   Double myLongitude = 26.103687;
+				   String labelLocation = "Jorgesys @ Bucharest";
+				String urlAddress = "http://maps.google.com/maps?q="+ myLatitude  +"," + myLongitude +"("+ labelLocation + ")&iwloc=A&hl=es";     
+			    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAddress));
+			    startActivity(intent);
+			}
+		});
+	}
+	
     // Creator delete event feature
 	protected void addDeleteListener(ListView listView) {
 		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -110,7 +129,9 @@ public class CreatedEventsActivity extends MainActivity {
 		        if(extras != null) {
 		        	new_event_name = extras.getString("input");
 		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventDateActivity.class);    
-   		            startActivityForResult(i, 3);
+		            // Bundle options = ActivityOptions.makeCustomAnimation(CreatedEventsActivity.this, R.anim.right_slide_in, R.anim.right_slide_out).toBundle();
+		            // startActivityForResult(i, 3, options);
+		            startActivityForResult(i, 3);
 		        }
 		    }
 	    }
@@ -124,7 +145,7 @@ public class CreatedEventsActivity extends MainActivity {
 		        	new_event_month = extras.getInt("month");
 		        	new_event_day = extras.getInt("day");
 		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventTimeActivity.class);    
-   		            startActivityForResult(i, 4);
+		            startActivityForResult(i, 4);
 		        }
 		    }
 	    }
@@ -137,7 +158,7 @@ public class CreatedEventsActivity extends MainActivity {
 		        	new_event_hour = extras.getInt("hour");
 		        	new_event_minute = extras.getInt("minute");
 		            Intent i = new Intent(CreatedEventsActivity.this, CreateNewEventAttendeesActivity.class);    
-   		            startActivityForResult(i, 5);
+		            startActivityForResult(i, 5);
 		        }
 		    }
 	    }
@@ -162,25 +183,33 @@ public class CreatedEventsActivity extends MainActivity {
 		
 		// Allocate ping entries and add to user event and event status lists
 		for(String attendee : global.attendees.keySet()) {
-			global.userPingsRef.child(attendee).child(newEventRef.getName()).setValue("0");
+			// Creator doesn't need a ping entry
+			if (!attendee.equals(global.phone_number)) {
+				global.userPingsRef.child(attendee).child(newEventRef.getName()).setValue("0");
+			}
 		}
 		
 		for(String attendee : global.attendees.keySet()) {
-			if (attendee != global.phone_number) {
+			// Don't add event to creator's own events
+			if (!attendee.equals(global.phone_number)) {
 				global.userEventsRef.child(attendee).child(newEventRef.getName()).setValue(event, date.getDateAsString()); // Prioritize by date (getDateAsString) so that earlier events show up at the top
 			}
 		}
 
 		for(final String attendee : global.attendees.keySet()) {
-			global.eventStatusRef.child(newEventRef.getName()).child(attendee).setValue(new HashMap<String, String>(){{ put("name", global.attendees.get(attendee)); put("status", "?"); }});
+			if (!attendee.equals(global.phone_number)) {
+				global.eventStatusRef.child(newEventRef.getName()).child(attendee).setValue(new HashMap<String, String>(){{ put("name", global.attendees.get(attendee)); put("status", "?"); }});
+			} else {
+				global.eventStatusRef.child(newEventRef.getName()).child(global.phone_number).setValue(new HashMap<String, String>(){{ put("name", global.display_name); put("status", "Creator"); }});
+			}
+			
 		}
-		
-		// Add to events
-		newEventRef.setValue(event, date.getDateAsString());
+
 		// Add event to user's created events
 		global.createdEventsRef.child(global.phone_number).child(newEventRef.getName()).setValue(event, date.getDateAsString());
-		// Designate status as creator
-		global.eventStatusRef.child(newEventRef.getName()).child(global.phone_number).setValue(new HashMap<String, String>(){{ put("name", global.display_name); put("status", "Creator"); }});
+		
+		// Add to events
+		newEventRef.setValue(event, date.getDateAsString());		
 		
 	}
 }

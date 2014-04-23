@@ -49,18 +49,6 @@ public class MainActivity extends ListActivity {
 		super.onStop();
 	}
 	
-	// Create new event button
-	protected void addNewEventButton() {
-		findViewById(R.id.create_event_button).setOnClickListener(
-		new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-		         Intent i = new Intent(MainActivity.this, CreateNewEventNameActivity.class);    
-		         startActivityForResult(i, 2);
-			}
-		});
-	}
-	
 	// Open popup for attendee status listener
 	protected void addPopupListener(ListView listView, final int layout) {
 		listView.setOnItemClickListener(new OnItemClickListener() {
@@ -160,7 +148,10 @@ public class MainActivity extends ListActivity {
 		Calendar c = Calendar.getInstance(); 
 		int seconds = c.get(Calendar.SECOND);
 		for(Object attendee : attendees.keySet()) {
-			global.userPingsRef.child(attendee.toString()).child(eventId).setValue(System.currentTimeMillis());
+			// Don't ping the creator
+			if (!attendee.toString().equals(global.phone_number)) {
+				global.userPingsRef.child(attendee.toString()).child(eventId).setValue(System.currentTimeMillis());
+			}
 		}
 	}
 	
