@@ -50,7 +50,7 @@ public class MainActivity extends ListActivity {
 	}
 	
 	// Open popup for attendee status listener
-	protected void addPopupListener(ListView listView, final int layout) {
+	protected void addPopupListener(final ListView listView, final int layout) {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 		   @Override
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,

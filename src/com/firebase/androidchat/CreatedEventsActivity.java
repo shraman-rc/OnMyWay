@@ -182,7 +182,7 @@ public class CreatedEventsActivity extends MainActivity {
 	
 	protected void createEvent() {
 		Date date = new Date(new_event_year, new_event_month, new_event_day, new_event_hour, new_event_minute);
-		Location location = new Location(new_event_latitude, new_event_longitude);
+		Location location = new Location(new_event_latitude, new_event_longitude, System.currentTimeMillis());
 		
 		// Get new event ID
 		Firebase newEventRef = global.eventsRef.push();

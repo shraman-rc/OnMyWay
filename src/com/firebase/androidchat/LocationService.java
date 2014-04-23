@@ -25,6 +25,8 @@ public class LocationService extends Service implements LocationListener {
 	private String phone_number;
 	private String display_name;
 	private List<String> activeEvents;
+	private List<Double> latitudes;
+	private List<Double> longitudes;
 	private NotificationManager notificationManager;
 	private LocationManager locationManager;
 	private Criteria criteria;
@@ -47,6 +49,8 @@ public class LocationService extends Service implements LocationListener {
         // Display a notification about us starting.  We put an icon in the status bar.
         //showNotification();
     	activeEvents = new ArrayList<String>();
+    	latitudes = new ArrayList<Double>();
+    	longitudes = new ArrayList<Double>();
     }
 
 
@@ -58,6 +62,8 @@ public class LocationService extends Service implements LocationListener {
 			phone_number = extras.getString("phone_number");
 			display_name = extras.getString("display_name");
 			activeEvents.add(extras.getString("event_id"));
+			latitudes.add(extras.getDouble("latitude"));
+			longitudes.add(extras.getDouble("longitude"));
 			locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 			criteria = new Criteria();
 			provider = locationManager.getBestProvider(criteria, true);
@@ -85,16 +91,16 @@ public class LocationService extends Service implements LocationListener {
 		double lat = location.getLatitude();
 		double lng = location.getLongitude();
 		Firebase userLocationRef = new Firebase(FIREBASE_URL).child("userLocations").child(phone_number);
-		userLocationRef.setValue(new com.firebase.androidchat.Location(lat, lng));
+		userLocationRef.setValue(new com.firebase.androidchat.Location(lat, lng, System.currentTimeMillis()));
 		// we need to implement no repeating of event ids
-		for (String eventId : activeEvents) {
-			Firebase userStatusRef = new Firebase(FIREBASE_URL).child("eventStatus").child(eventId).child(phone_number);
-			userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "On my way! (" + 43 + ")"); }});
+		for (int i = 0; i < activeEvents.size(); ++i) {
+			Firebase userStatusRef = new Firebase(FIREBASE_URL).child("eventStatus").child(activeEvents.get(i)).child(phone_number);
+			float[] results = new float[1];
+			Location.distanceBetween(latitudes.get(i), longitudes.get(i), lat, lng, results);
+			final float distance = results[0];
+			userStatusRef.setValue(new HashMap<String, String>(){{ put("name", display_name); put("status", "On my way! (" + distance + " meters)"); }});
 		}
-		
-		
 	}
-
 
   	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
