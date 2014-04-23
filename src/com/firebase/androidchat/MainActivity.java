@@ -2,7 +2,6 @@ package com.firebase.androidchat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,8 +13,8 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -23,7 +22,6 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.GenericTypeIndicator;
 import com.firebase.client.ValueEventListener;
@@ -70,87 +68,73 @@ public class MainActivity extends ListActivity {
 		   public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 		     long arg3) {
 
-			    dialog.setContentView(layout);
+			     dialog.setContentView(layout);
 			    
-		        final TextView nameText = (TextView)dialog.findViewById(R.id.name);
-		        final TextView dateText = (TextView)dialog.findViewById(R.id.date);
-		        final TextView timeText = (TextView)dialog.findViewById(R.id.time);
+		         TextView nameText = (TextView)dialog.findViewById(R.id.name);
+		         TextView dateText = (TextView)dialog.findViewById(R.id.date);
+		         TextView timeText = (TextView)dialog.findViewById(R.id.time);
 		        		        
-		        // From the event id, find the event from the events table
-		        final String eventId = listAdapter.getItem(arg2).toString();
-		        global.eventsRef.child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
+		         final Event event = (Event) listAdapter.getItem(arg2);
+		    	 nameText.setText(event.getName());
+		    	 dateText.setText(event.getDate().getDate());
+		    	 timeText.setText(event.getDate().getTime());
+		    	 
+		    	 // Listen to event status and remove listener when the dialog is closed
+		    	 final String eventId = listAdapter.getIdOfItem(arg2);
+		    	 final ValueEventListener statusListener = global.eventStatusRef.child(eventId).addValueEventListener(new ValueEventListener() {
 				     @Override
 				     public void onDataChange(DataSnapshot snapshot) {
-				    	 final Event event = snapshot.getValue(Event.class);
-				    	 if (event != null) {
-					    	 nameText.setText(event.getName());
-					    	 dateText.setText(event.getDate().getDate());
-					    	 timeText.setText(event.getDate().getTime());
-					    	 
-					    	 // Listen to event status and remove listener when the dialog is closed
-					    	 final ValueEventListener statusListener = global.eventStatusRef.child(eventId).addValueEventListener(new ValueEventListener() {
+				    	 GenericTypeIndicator<Map<String,Map<String, String>>> t = new GenericTypeIndicator<Map<String,Map<String, String>>>() {};
+				    	 final Map<String, Map<String, String>> statusMap = snapshot.getValue(t);
+				    	 if (statusMap != null) {
+				    		 final List<Map<String, String>> statuses = new ArrayList<>(statusMap.values());
+				        	 // Get the event attendees
+					    	 global.eventsRef.child(eventId).child("attendees").addListenerForSingleValueEvent(new ValueEventListener() {
 							     @Override
 							     public void onDataChange(DataSnapshot snapshot) {
-							    	 GenericTypeIndicator<Map<String,Map<String, String>>> t = new GenericTypeIndicator<Map<String,Map<String, String>>>() {};
-							    	 final Map<String, Map<String, String>> statusMap = snapshot.getValue(t);
-							    	 if (statusMap != null) {
-							    		 final List<Map<String, String>> statuses = new ArrayList<>(statusMap.values());
-							        	 // Get the event attendees
-								    	 global.eventsRef.child(eventId).child("attendees").addListenerForSingleValueEvent(new ValueEventListener() {
-										     @Override
-										     public void onDataChange(DataSnapshot snapshot) {
-										    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
-										    	 final Map<String, String> attendees = snapshot.getValue(t);
-										    	 if (attendees != null) {
-										    		 
-										    		// Add listener to the ping button
-										    		final Button pingButton = (Button)dialog.findViewById(R.id.ping_button);
-										    		addPingButtonListener(pingButton, eventId, attendees);
-											        
-											        // Set the adapter
-										    		ListView listView = (ListView) dialog.findViewById(R.id.attendees);
-										            final SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, statuses, R.layout.rowlayout, 
-										            	      new String[] {"name", "status"}, new int[] {R.id.name, R.id.status});
-										     		listView.setAdapter(adapter);
-										     		
-										     		// Add listener for deletion of attendees if user is creator
-										     		if (event.getCreator().equals(global.phone_number)) {
-										     			addAttendeeDeleteListener(listView, adapter, statusMap, eventId);
-										     		}
-										    	 }
-										     }
-
-										     @Override
-										     public void onCancelled() {
-										         System.err.println("Listener was cancelled");
-										     }
-										});
-							         }
+							    	 GenericTypeIndicator<Map<String, String>> t = new GenericTypeIndicator<Map<String, String>>() {};
+							    	 final Map<String, String> attendees = snapshot.getValue(t);
+							    	 if (attendees != null) {
+							    		 
+							    		// Add listener to the ping button
+							    		final Button pingButton = (Button)dialog.findViewById(R.id.ping_button);
+							    		addPingButtonListener(pingButton, eventId, attendees);
+								        
+								        // Set the adapter
+							    		ListView listView = (ListView) dialog.findViewById(R.id.attendees);
+							            final SimpleAdapter adapter = new SimpleAdapter(MainActivity.this, statuses, R.layout.rowlayout, 
+							            	      new String[] {"name", "status"}, new int[] {R.id.name, R.id.status});
+							     		listView.setAdapter(adapter);
+							     		
+							     		// Add listener for deletion of attendees if user is creator
+							     		if (event.getCreator().equals(global.phone_number)) {
+							     			addAttendeeDeleteListener(listView, adapter, statusMap, eventId);
+							     		}
+							    	 }
 							     }
 
 							     @Override
 							     public void onCancelled() {
 							         System.err.println("Listener was cancelled");
 							     }
-							 });
-					    	 
-							 dialog.setOnDismissListener(new OnDismissListener() {
-							    @Override
-							    public void onDismiss(DialogInterface dialogInterface) {
-							    	global.eventStatusRef.removeEventListener(statusListener);
-							    }
-						     });
-					    	 
-					    	 dialog.show();
-				    	 }
+							});
+				         }
 				     }
 
 				     @Override
 				     public void onCancelled() {
 				         System.err.println("Listener was cancelled");
 				     }
-				});
-		    
+				 });
+		    	 
+				 dialog.setOnDismissListener(new OnDismissListener() {
+				    @Override
+				    public void onDismiss(DialogInterface dialogInterface) {
+				    	global.eventStatusRef.removeEventListener(statusListener);
+				    }
+			     });
+		    	 
+		    	 dialog.show();		    
 		   }
 		         
 		});

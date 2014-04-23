@@ -68,7 +68,8 @@ public class CreatedEventsActivity extends MainActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                     int pos, long arg3) {
- 				final String eventId = listAdapter.getItem(pos).toString();
+ 				Event event = (Event) listAdapter.getItem(pos);
+ 				final String eventId = listAdapter.getIdOfItem(pos);
  				
  				TextView nameText = (TextView) arg1.findViewById(R.id.name);
  				final String name = nameText.getText().toString();
@@ -155,26 +156,29 @@ public class CreatedEventsActivity extends MainActivity {
 		// Get new event ID
 		Firebase newEventRef = global.eventsRef.push();
 		
+		// Add self to attendees and create event
+        global.attendees.put(global.phone_number, global.display_name);
+        Event event = new Event(new_event_name, global.phone_number, date, global.attendees);
+		
 		// Allocate ping entries and add to user event and event status lists
 		for(String attendee : global.attendees.keySet()) {
 			global.userPingsRef.child(attendee).child(newEventRef.getName()).setValue("0");
 		}
 		
 		for(String attendee : global.attendees.keySet()) {
-			global.userEventsRef.child(attendee).child(newEventRef.getName()).setValue(newEventRef.getName(), date.getDateAsString()); // Prioritize by date (getDateAsString) so that earlier events show up at the top
+			if (attendee != global.phone_number) {
+				global.userEventsRef.child(attendee).child(newEventRef.getName()).setValue(event, date.getDateAsString()); // Prioritize by date (getDateAsString) so that earlier events show up at the top
+			}
 		}
 
 		for(final String attendee : global.attendees.keySet()) {
 			global.eventStatusRef.child(newEventRef.getName()).child(attendee).setValue(new HashMap<String, String>(){{ put("name", global.attendees.get(attendee)); put("status", "?"); }});
 		}
 		
-		// Add self to attendees and create event
-        global.attendees.put(global.phone_number, global.display_name);
-        Event event = new Event(new_event_name, global.phone_number, date, global.attendees);
 		// Add to events
 		newEventRef.setValue(event, date.getDateAsString());
 		// Add event to user's created events
-		global.createdEventsRef.child(global.phone_number).child(newEventRef.getName()).setValue(newEventRef.getName(), date.getDateAsString());
+		global.createdEventsRef.child(global.phone_number).child(newEventRef.getName()).setValue(event, date.getDateAsString());
 		// Designate status as creator
 		global.eventStatusRef.child(newEventRef.getName()).child(global.phone_number).setValue(new HashMap<String, String>(){{ put("name", global.display_name); put("status", "Creator"); }});
 		
